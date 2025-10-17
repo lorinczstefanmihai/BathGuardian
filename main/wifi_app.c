@@ -85,7 +85,15 @@ static void wifi_app_event_handler(void* arg, esp_event_base_t event_base, int32
                 ESP_LOGI(TAG, "WiFi STA got IP address");
                 //wifi_app_send_message(WIFI_APP_MSG_STA_CONNECTED_GOT_IP);
                 break;
-
+            case IP_EVENT_STA_LOST_IP:
+                ESP_LOGI(TAG, "WiFi STA lost IP address");
+                break;
+            case IP_EVENT_AP_STAIPASSIGNED:
+                ESP_LOGI(TAG, "AP assigned IP to station");
+                break;
+            case IP_EVENT_GOT_IP6:
+                ESP_LOGI(TAG, "WiFi interface got IPv6 address");
+                break;
             default:
                 ESP_LOGW(TAG, "Unhandled IP event: %d", event_id);
                 break;
@@ -162,8 +170,8 @@ static void wifi_app_soft_ap_config(void)
     ESP_ERROR_CHECK(esp_netif_set_ip_info(wifi_ap_netif, &ap_ip_info)); //Statically configure the network interface
     esp_netif_dhcps_start(wifi_ap_netif); //Start the AP DHCP server ( for connecting stations e.g. mobile devices )
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA)); //Set WiFi mode to Access Point / Station
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_ap_config)); //Set the WiFi configuration for the Access Point
     ESP_ERROR_CHECK(esp_wifi_set_bandwidth(WIFI_IF_AP, WIFI_AP_BANDWIDTH)); //Set the WiFi bandwidth for the Access Point
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_ap_config)); //Set the WiFi configuration for the Access Point
     ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_STA_POWER_SAVE_MODE)); //Set the power save mode for the Station
 }
 
@@ -233,6 +241,7 @@ BaseType_t wifi_app_send_message(wifi_app_message_e msgID)
 void wifi_app_task_start(void)
 {
     ESP_LOGI(TAG, "Starting WiFi application task...");
+
 
     //Start WiFi started LED indication
     rgb_led_wifi_app_started();

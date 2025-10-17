@@ -7502,6 +7502,97 @@
             {
                 "children": [
                     {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This sets the default limit for the HTTP request header length. The limit can be\nconfigured at run time by setting max_req_hdr_len member of httpd_config_t structure.\nThe memory allocated will depend on the actual header length. Hence keeping a sufficiently\nlarge max header length is recommended.",
+                        "id": "HTTPD_MAX_REQ_HDR_LEN",
+                        "name": "HTTPD_MAX_REQ_HDR_LEN",
+                        "range": [
+                            128,
+                            65536
+                        ],
+                        "title": "HTTP Request Header Length limit",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This sets the maximum supported size of HTTP request URI to be processed by the server",
+                        "id": "HTTPD_MAX_URI_LEN",
+                        "name": "HTTPD_MAX_URI_LEN",
+                        "range": null,
+                        "title": "Max HTTP URI Length",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Using TCP_NODEALY socket option ensures that HTTP error response reaches the client before the\nunderlying socket is closed. Please note that turning this off may cause multiple test failures",
+                        "id": "HTTPD_ERR_RESP_NO_DELAY",
+                        "name": "HTTPD_ERR_RESP_NO_DELAY",
+                        "range": null,
+                        "title": "Use TCP_NODELAY socket option when sending HTTP error responses",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This sets the size of the temporary buffer used to receive and discard any remaining data that is\nreceived from the HTTP client in the request, but not processed as part of the server HTTP request\nhandler.\n\nIf the remaining data is larger than the available buffer size, the buffer will be filled in multiple\niterations. The buffer should be small enough to fit on the stack, but large enough to avoid excessive\niterations.",
+                        "id": "HTTPD_PURGE_BUF_LEN",
+                        "name": "HTTPD_PURGE_BUF_LEN",
+                        "range": null,
+                        "title": "Length of temporary buffer for purging data",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Enabling this will log discarded binary HTTP request data at Debug level.\nFor large content data this may not be desirable as it will clutter the log.",
+                        "id": "HTTPD_LOG_PURGE_DATA",
+                        "name": "HTTPD_LOG_PURGE_DATA",
+                        "range": null,
+                        "title": "Log purged content data at Debug level",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This sets the WebSocket server support.",
+                        "id": "HTTPD_WS_SUPPORT",
+                        "name": "HTTPD_WS_SUPPORT",
+                        "range": null,
+                        "title": "WebSocket server support",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This makes httpd_queue_work() API to wait until a message space is available on UDP control socket.\nIt internally uses a counting semaphore with count set to `LWIP_UDP_RECVMBOX_SIZE` to achieve this.\nThis config will slightly change API behavior to block until message gets delivered on control socket.",
+                        "id": "HTTPD_QUEUE_WORK_BLOCKING",
+                        "name": "HTTPD_QUEUE_WORK_BLOCKING",
+                        "range": null,
+                        "title": "httpd_queue_work as blocking API",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This config option helps in setting the time in millisecond to wait for event to be posted to the\nsystem default event loop. Set it to -1 if you need to set timeout to portMAX_DELAY.",
+                        "id": "HTTPD_SERVER_EVENT_POST_TIMEOUT",
+                        "name": "HTTPD_SERVER_EVENT_POST_TIMEOUT",
+                        "range": null,
+                        "title": "Time in millisecond to wait for posting event",
+                        "type": "int"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-http-server",
+                "title": "HTTP Server",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
                         "children": [
                             {
                                 "children": [
