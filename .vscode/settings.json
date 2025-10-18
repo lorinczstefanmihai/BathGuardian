@@ -1,7 +1,7 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
   "idf.espIdfPath": "/home/stefan/esp/v5.5.1/esp-idf",
-  "idf.pythonInstallPath": "/usr/bin/python3",
+  "idf.pythonInstallPath": "C:\\Users\\lorin\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
   "idf.openOcdConfigs": [
     "board/esp32-wrover-kit-3.3v.cfg"
   ],
@@ -22,7 +22,11 @@
     "ledc.h": "c",
     "ledc_types.h": "c",
     "freertos.h": "c",
-    "tasks_common.h": "c"
+    "tasks_common.h": "c",
+    "esp_netif.h": "c",
+    "http_server.h": "c",
+    "MQ135.C": "cpp"
   },
-  "idf.flashType": "UART"
+  "idf.flashType": "UART",
+  "idf.portWin": "COM18"
 }

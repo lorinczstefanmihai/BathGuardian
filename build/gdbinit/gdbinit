@@ -1,2 +1,2 @@
-source /home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/gdbinit/symbols
-source /home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/gdbinit/connect
+source D:/PROJECTS/BathGuardian/build/gdbinit/symbols
+source D:/PROJECTS/BathGuardian/build/gdbinit/connect

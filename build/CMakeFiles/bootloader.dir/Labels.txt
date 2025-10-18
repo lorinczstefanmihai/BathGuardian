@@ -1,13 +1,13 @@
 # Target labels
  bootloader
 # Source files and their labels
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/CMakeFiles/bootloader
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/CMakeFiles/bootloader.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/CMakeFiles/bootloader-complete.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
-/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+D:/PROJECTS/BathGuardian/build/CMakeFiles/bootloader
+D:/PROJECTS/BathGuardian/build/CMakeFiles/bootloader.rule
+D:/PROJECTS/BathGuardian/build/CMakeFiles/bootloader-complete.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule

@@ -2,34 +2,34 @@
 	"sources" : 
 	[
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/CMakeFiles/bootloader"
+			"file" : "D:/PROJECTS/BathGuardian/build/CMakeFiles/bootloader"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/CMakeFiles/bootloader.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/CMakeFiles/bootloader.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/CMakeFiles/bootloader-complete.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/CMakeFiles/bootloader-complete.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule"
 		},
 		{
-			"file" : "/home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
+			"file" : "D:/PROJECTS/BathGuardian/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule"
 		}
 	],
 	"target" : 

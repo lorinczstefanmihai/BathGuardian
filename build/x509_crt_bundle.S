@@ -1,4 +1,4 @@
-/* * Data converted from /home/stefan/Documents/MyWorkspaceESP32/BathGuardian/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from D:/PROJECTS/BathGuardian/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

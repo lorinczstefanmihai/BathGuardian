@@ -2463,16 +2463,6 @@
         "children": [],
         "depends_on": null,
         "help": null,
-        "id": "SOC_BLE_MULTI_CONN_OPTIMIZATION",
-        "name": "SOC_BLE_MULTI_CONN_OPTIMIZATION",
-        "range": null,
-        "title": null,
-        "type": "bool"
-    },
-    {
-        "children": [],
-        "depends_on": null,
-        "help": null,
         "id": "SOC_ULP_HAS_ADC",
         "name": "SOC_ULP_HAS_ADC",
         "range": null,
@@ -2996,48 +2986,27 @@
                         "children": [
                             {
                                 "children": [],
-                                "depends_on": "BOOTLOADER_RECOVERY_ENABLE",
-                                "help": "Flash address where the recovery bootloader is stored.\nThis value must be written to the eFuse field (ESP_EFUSE_RECOVERY_BOOTLOADER_FLASH_SECTOR)\nto activate the recovery bootloader in the ROM bootloader. The eFuse can be programmed\nusing espefuse.py or in the user application with the API esp_efuse_set_recovery_bootloader_offset().\nSetting this value in the config allows parttool.py to verify that it does not overlap with existing\npartitions in the partition table.\n\nThe address must be a multiple of the flash sector size (0x1000 bytes).\nThe eFuse field stores the offset in sectors.\nIf the feature is no longer needed or unused, you can burn the 0xFFF value to disable this feature in\nthe ROM bootloader.",
-                                "id": "BOOTLOADER_RECOVERY_OFFSET",
-                                "name": "BOOTLOADER_RECOVERY_OFFSET",
+                                "depends_on": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
+                                "help": "The secure version is the sequence number stored in the header of each bootloader.\n\nThe ROM Bootloader which runs the 2nd stage bootloader (PRIMARY or RECOVERY) checks that\nthe security version is greater or equal that recorded in the eFuse field.\nBootloaders that have a secure version in the image < secure version in efuse will not boot.\n\nThe security version is worth increasing if in previous versions there is\na significant vulnerability and their use is not acceptable.",
+                                "id": "BOOTLOADER_SECURE_VERSION",
+                                "name": "BOOTLOADER_SECURE_VERSION",
                                 "range": null,
-                                "title": "Recovery Bootloader Flash Offset",
-                                "type": "hex"
-                            },
-                            {
-                                "children": [
-                                    {
-                                        "children": [],
-                                        "depends_on": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
-                                        "help": "The secure version is the sequence number stored in the header of each bootloader.\n\nThe ROM Bootloader which runs the 2nd stage bootloader (PRIMARY or RECOVERY) checks that\nthe security version is greater or equal that recorded in the eFuse field.\nBootloaders that have a secure version in the image < secure version in efuse will not boot.\n\nThe security version is worth increasing if in previous versions there is\na significant vulnerability and their use is not acceptable.",
-                                        "id": "BOOTLOADER_SECURE_VERSION",
-                                        "name": "BOOTLOADER_SECURE_VERSION",
-                                        "range": null,
-                                        "title": "Secure version of bootloader",
-                                        "type": "int"
-                                    }
-                                ],
-                                "depends_on": "BOOTLOADER_RECOVERY_ENABLE",
-                                "help": "This option prevents rollback to previous bootloader image with lower security version.",
-                                "id": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
-                                "name": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
-                                "range": null,
-                                "title": "Enable bootloader rollback support",
-                                "type": "bool"
+                                "title": "Secure version of bootloader",
+                                "type": "int"
                             }
                         ],
                         "depends_on": "SOC_RECOVERY_BOOTLOADER_SUPPORTED",
-                        "help": "The recovery bootloader feature is implemented in the ROM bootloader. It is required for safe OTA\nupdates of the bootloader. The feature is activated when the eFuse field\n(ESP_EFUSE_RECOVERY_BOOTLOADER_FLASH_SECTOR) is set, which defines the flash address of the\nrecovery bootloader. If activated and the primary bootloader fails to load, the ROM bootloader\nwill attempt to load the recovery bootloader from the address specified in eFuse.",
-                        "id": "BOOTLOADER_RECOVERY_ENABLE",
-                        "name": "BOOTLOADER_RECOVERY_ENABLE",
+                        "help": "This option prevents rollback to previous bootloader image with lower security version.",
+                        "id": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
+                        "name": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
                         "range": null,
-                        "title": "Enable Recovery Bootloader",
+                        "title": "Enable bootloader rollback support",
                         "type": "bool"
                     }
                 ],
                 "depends_on": null,
-                "id": "bootloader-config-recovery-bootloader-and-rollback",
-                "title": "Recovery Bootloader and Rollback",
+                "id": "bootloader-config-bootloader-rollback",
+                "title": "Bootloader Rollback",
                 "type": "menu"
             },
             {
@@ -3918,20 +3887,10 @@
                         "range": null,
                         "title": "Using ECC curve NISTP256 (Recommended)",
                         "type": "bool"
-                    },
-                    {
-                        "children": [],
-                        "depends_on": "SECURE_SIGNED_APPS_ECDSA_V2_SCHEME && SOC_ECDSA_SUPPORT_CURVE_P384 && <choice SECURE_BOOT_ECDSA_KEY_LEN_SIZE>",
-                        "help": null,
-                        "id": "SECURE_BOOT_ECDSA_KEY_LEN_384_BITS",
-                        "name": "SECURE_BOOT_ECDSA_KEY_LEN_384_BITS",
-                        "range": null,
-                        "title": "Using ECC curve NISTP384 (Recommended)",
-                        "type": "bool"
                     }
                 ],
                 "depends_on": "SECURE_SIGNED_APPS_ECDSA_V2_SCHEME",
-                "help": "Select the ECDSA key size. Three key sizes are supported depending upon on the target:\n\n- 192 bit key using NISTP192 curve\n- 256 bit key using NISTP256 curve (Recommended)\n- 384 bit key using NISTP384 curve (Recommended)\n\nThe advantage of using 384 and 256 bit keys is the extra randomness which makes it difficult to be\nbruteforced compared to 192 bit key.\nAt present, both key sizes are practically implausible to bruteforce.",
+                "help": "Select the ECDSA key size. Two key sizes are supported\n\n- 192 bit key using NISTP192 curve\n- 256 bit key using NISTP256 curve (Recommended)\n\nThe advantage of using 256 bit key is the extra randomness which makes it difficult to be\nbruteforced compared to 192 bit key.\nAt present, both key sizes are practically implausible to bruteforce.",
                 "id": "security-features-ecdsa-key-size",
                 "name": "SECURE_BOOT_ECDSA_KEY_LEN_SIZE",
                 "title": "ECDSA key size",
@@ -4424,7 +4383,7 @@
                     {
                         "children": [],
                         "depends_on": "SOC_SUPPORTS_SECURE_DL_MODE && <choice SECURE_UART_ROM_DL_MODE>",
-                        "help": "If set, during startup the app will burn an eFuse bit to permanently switch the UART ROM\nDownload Mode into a separate Secure Download mode. This option can only work if\nDownload Mode is not already disabled by eFuse.\n\nSecure Download mode limits the use of Download Mode functions to update SPI config,\nchanging baud rate, basic flash write and a command to return a summary of currently\nenabled security features (`get_security_info`).\n\nSecure Download mode is not compatible with the esptool.py flasher stub feature,\nespefuse.py, read/writing memory or registers, encrypted download, or any other\nfeatures that interact with unsupported Download Mode commands.\n\nSecure Download mode should be enabled in any application where Flash Encryption\nand/or Secure Boot is enabled. Disabling this option does not immediately cancel\nthe benefits of the security features, but it increases the potential \"attack\nsurface\" for an attacker to try and bypass them with a successful physical attack.\n\nIt is also possible to enable secure download mode at runtime by calling\nesp_efuse_enable_rom_secure_download_mode()\n\nNote: Secure Download mode is not available for ESP32.",
+                        "help": "If set, during startup the app will burn an eFuse bit to permanently switch the UART ROM\nDownload Mode into a separate Secure Download mode. This option can only work if\nDownload Mode is not already disabled by eFuse.\n\nSecure Download mode limits the use of Download Mode functions to update SPI config,\nchanging baud rate, basic flash write and a command to return a summary of currently\nenabled security features (`get_security_info`).\n\nSecure Download mode is not compatible with the esptool.py flasher stub feature,\nespefuse.py, read/writing memory or registers, encrypted download, or any other\nfeatures that interact with unsupported Download Mode commands.\n\nSecure Download mode should be enabled in any application where Flash Encryption\nand/or Secure Boot is enabled. Disabling this option does not immediately cancel\nthe benefits of the security features, but it increases the potential \"attack\nsurface\" for an attacker to try and bypass them with a successful physical attack.\n\nIt is also possible to enable secure download mode at runtime by calling\nesp_efuse_enable_rom_secure_download_mode()\n\nNote: Secure Download mode is not available for ESP32 (includes revisions till ECO3).",
                         "id": "SECURE_ENABLE_SECURE_ROM_DL_MODE",
                         "name": "SECURE_ENABLE_SECURE_ROM_DL_MODE",
                         "range": null,
@@ -6388,6 +6347,112 @@
                 "depends_on": null,
                 "id": "component-config-efuse-bit-manager",
                 "title": "eFuse Bit Manager",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Place ISR version ADC oneshot mode read function into IRAM.",
+                        "id": "ADC_ONESHOT_CTRL_FUNC_IN_IRAM",
+                        "name": "ADC_ONESHOT_CTRL_FUNC_IN_IRAM",
+                        "range": null,
+                        "title": "Place ISR version ADC oneshot mode read function into IRAM",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "SOC_ADC_DMA_SUPPORTED",
+                        "help": "Ensure the ADC continuous mode ISR is IRAM-Safe. When enabled, the ISR handler\nwill be available when the cache is disabled.",
+                        "id": "ADC_CONTINUOUS_ISR_IRAM_SAFE",
+                        "name": "ADC_CONTINUOUS_ISR_IRAM_SAFE",
+                        "range": null,
+                        "title": "ADC continuous mode driver ISR IRAM-Safe",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "IDF_TARGET_ESP32",
+                                "help": "Some ESP32s have Two Point calibration values burned into eFuse BLOCK3.\nThis option will allow the ADC calibration component to characterize the\nADC-Voltage curve using Two Point values if they are available.",
+                                "id": "ADC_CALI_EFUSE_TP_ENABLE",
+                                "name": "ADC_CALI_EFUSE_TP_ENABLE",
+                                "range": null,
+                                "title": "Use Two Point Values",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "IDF_TARGET_ESP32",
+                                "help": "Some ESP32s have Vref burned into eFuse BLOCK0. This option will allow\nthe ADC calibration component to characterize the ADC-Voltage curve using\neFuse Vref if it is available.",
+                                "id": "ADC_CALI_EFUSE_VREF_ENABLE",
+                                "name": "ADC_CALI_EFUSE_VREF_ENABLE",
+                                "range": null,
+                                "title": "Use eFuse Vref",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "IDF_TARGET_ESP32",
+                                "help": "This option will allow the ADC calibration component to use Lookup Tables\nto correct for non-linear behavior in 11db attenuation. Other attenuations\ndo not exhibit non-linear behavior hence will not be affected by this option.",
+                                "id": "ADC_CALI_LUT_ENABLE",
+                                "name": "ADC_CALI_LUT_ENABLE",
+                                "range": null,
+                                "title": "Use Lookup Tables",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": "IDF_TARGET_ESP32",
+                        "id": "component-config-adc-and-adc-calibration-adc-calibration-configurations",
+                        "title": "ADC Calibration Configurations",
+                        "type": "menu"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "SOC_DAC_SUPPORTED",
+                        "help": "By default, this is set. The ADC oneshot driver will disable the output of the\ncorresponding DAC channels:\nESP32:   IO25 and IO26\nESP32S2: IO17 and IO18\n\nDisable this option so as to measure the output of DAC by internal ADC, for test usage.",
+                        "id": "ADC_DISABLE_DAC_OUTPUT",
+                        "name": "ADC_DISABLE_DAC_OUTPUT",
+                        "range": null,
+                        "title": "Disable DAC when ADC2 is in use",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32S3",
+                        "help": "On ESP32C3 and ESP32S3, ADC2 Digital Controller is not stable. Therefore,\nADC2 continuous mode is not suggested on ESP32S3 and ESP32C3\n\nIf you stick to this, you can enable this option to force use ADC2 under above conditions.\nFor more details, you can search for errata on espressif website.",
+                        "id": "ADC_CONTINUOUS_FORCE_USE_ADC2_ON_C3_S3",
+                        "name": "ADC_CONTINUOUS_FORCE_USE_ADC2_ON_C3_S3",
+                        "range": null,
+                        "title": "Force use ADC2 continuous mode on ESP32S3 or ESP32C3",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "IDF_TARGET_ESP32C3",
+                        "help": "On ESP32C3, ADC2 Digital Controller is not stable. Therefore,\nADC2 oneshot mode is not suggested on ESP32C3\n\nIf you stick to this, you can enable this option to force use ADC2 under above conditions.\nFor more details, you can search for errata on espressif website.",
+                        "id": "ADC_ONESHOT_FORCE_USE_ADC2_ON_C3",
+                        "name": "ADC_ONESHOT_FORCE_USE_ADC2_ON_C3",
+                        "range": null,
+                        "title": "Force use ADC2 oneshot mode on ESP32C3",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "whether to enable the debug log message for ADC driver.\nNote that this option only controls the ADC driver log, will not affect other drivers.\n\nnote: This cannot be used in the ADC legacy driver.",
+                        "id": "ADC_ENABLE_DEBUG_LOG",
+                        "name": "ADC_ENABLE_DEBUG_LOG",
+                        "range": null,
+                        "title": "Enable ADC debug log",
+                        "type": "bool"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-adc-and-adc-calibration",
+                "title": "ADC and ADC Calibration",
                 "type": "menu"
             },
             {
@@ -8607,16 +8672,6 @@
                     },
                     {
                         "children": [],
-                        "depends_on": "SOC_PMU_PVT_SUPPORTED",
-                        "help": "If enabled, hp & lp voltage can be auto adjust by PVT characteristic.\nOtherwise, internal voltage will be set to fix dbias.\nThis is a must for stable mass production. Disable for debugging only.",
-                        "id": "ESP_ENABLE_PVT",
-                        "name": "ESP_ENABLE_PVT",
-                        "range": null,
-                        "title": "Auto adjust hp & lp voltage using pvt function (MUST ENABLE FOR MP)",
-                        "type": "bool"
-                    },
-                    {
-                        "children": [],
                         "depends_on": null,
                         "help": null,
                         "id": "ESP_INTR_IN_IRAM",
@@ -9031,16 +9086,6 @@
                     {
                         "children": [],
                         "depends_on": "ESP_PHY_ENABLED",
-                        "help": "Set the period of the pll track.",
-                        "id": "ESP_PHY_PLL_TRACK_PERIOD_MS",
-                        "name": "ESP_PHY_PLL_TRACK_PERIOD_MS",
-                        "range": null,
-                        "title": "Set the period of the pll track",
-                        "type": "int"
-                    },
-                    {
-                        "children": [],
-                        "depends_on": "ESP_PHY_ENABLED",
                         "help": "If enabled, there will be some logs while pll tracking",
                         "id": "ESP_PHY_PLL_TRACK_DEBUG",
                         "name": "ESP_PHY_PLL_TRACK_DEBUG",
@@ -9067,28 +9112,6 @@
                         "range": null,
                         "title": "PHY IRAM speed optimization",
                         "type": "bool"
-                    },
-                    {
-                        "children": [
-                            {
-                                "children": [],
-                                "depends_on": "ESP_PHY_DEBUG && ESP_PHY_ENABLED",
-                                "help": "Disable pll track. This configuration option is used for experimental.\nPLL track helps the PHY module adapt to temperature changes, ensuring stable performance.\nWhen pll enabled, the ESP PHY module will periodically track and adjust PLL parameters.",
-                                "id": "ESP_PHY_DISABLE_PLL_TRACK",
-                                "name": "ESP_PHY_DISABLE_PLL_TRACK",
-                                "range": null,
-                                "title": "Disable phy pll track(only for experimental)",
-                                "type": "bool"
-                            }
-                        ],
-                        "depends_on": "ESP_PHY_ENABLED",
-                        "help": "Enabling this option allows different kinds of phy debugging features.",
-                        "id": "ESP_PHY_DEBUG",
-                        "is_menuconfig": true,
-                        "name": "ESP_PHY_DEBUG",
-                        "range": null,
-                        "title": "Enable PHY Debug",
-                        "type": "menu"
                     }
                 ],
                 "depends_on": null,
@@ -9597,16 +9620,6 @@
                         "id": "component-config-esp-system-settings-trace-memory",
                         "title": "Trace memory",
                         "type": "menu"
-                    },
-                    {
-                        "children": [],
-                        "depends_on": null,
-                        "help": "The following system functions will be placed in IRAM if this option is enabled:\n- system startup\n- system time\n- system error\n- system restart\n- system crosscore\n- system debug\n- system APB backup DMA lock\n- system application tick hook\n- Unified Behavior Sanitizer (UBSAN) hook\n- Interrupt watchdog handler\n- XTAL32K watchdog timer\n- USB CDC functions for the esp_rom_printf (if ESP_CONSOLE_USB_CDC_SUPPORT_ETS_PRINTF=y)\n- IPC and IPC ISR",
-                        "id": "ESP_SYSTEM_IN_IRAM",
-                        "name": "ESP_SYSTEM_IN_IRAM",
-                        "range": null,
-                        "title": "Place system functions in IRAM",
-                        "type": "bool"
                     },
                     {
                         "children": [
@@ -10404,16 +10417,6 @@
                 "children": [
                     {
                         "children": [],
-                        "depends_on": "!ESP_SYSTEM_SINGLE_CORE_MODE || APPTRACE_GCOV_ENABLE",
-                        "help": null,
-                        "id": "ESP_IPC_ENABLE",
-                        "name": "ESP_IPC_ENABLE",
-                        "range": null,
-                        "title": null,
-                        "type": "bool"
-                    },
-                    {
-                        "children": [],
                         "depends_on": null,
                         "help": "Configure the IPC tasks stack size. An IPC task runs on each core (in dual core mode), and allows for\ncross-core function calls. See IPC documentation for more details. The default IPC stack size should be\nenough for most common simple use cases. However, users can increase/decrease the stack size to their\nneeds.",
                         "id": "ESP_IPC_TASK_STACK_SIZE",
@@ -10427,7 +10430,7 @@
                     },
                     {
                         "children": [],
-                        "depends_on": "ESP_IPC_ENABLE",
+                        "depends_on": "!FREERTOS_UNICORE",
                         "help": "If this option is not enabled then the IPC task will keep behavior same as prior to that of ESP-IDF v4.0,\nhence IPC task will run at (configMAX_PRIORITIES - 1) priority.",
                         "id": "ESP_IPC_USES_CALLERS_PRIORITY",
                         "name": "ESP_IPC_USES_CALLERS_PRIORITY",
@@ -14032,7 +14035,7 @@
                         "id": "LWIP_DHCP_OPTIONS_LEN",
                         "name": "LWIP_DHCP_OPTIONS_LEN",
                         "range": [
-                            69,
+                            68,
                             255
                         ],
                         "title": "DHCP total option length",
@@ -16030,16 +16033,6 @@
                             },
                             {
                                 "children": [],
-                                "depends_on": "MBEDTLS_TLS_ENABLED",
-                                "help": "Enable shared symmetric keys export for TLS sessions using mbedtls_ssl_export_keying_material()\nafter SSL handshake. The process for deriving the keys is specified in RFC 5705 for TLS 1.2\nand in RFC 8446, Section 7.5, for TLS 1.3.",
-                                "id": "MBEDTLS_SSL_KEYING_MATERIAL_EXPORT",
-                                "name": "MBEDTLS_SSL_KEYING_MATERIAL_EXPORT",
-                                "range": null,
-                                "title": "Enable keying material export",
-                                "type": "bool"
-                            },
-                            {
-                                "children": [],
                                 "depends_on": "MBEDTLS_X509_CRL_PARSE_C",
                                 "help": "Enable PKCS number 7 core for using PKCS number 7-formatted signatures.",
                                 "id": "MBEDTLS_PKCS7_C",
@@ -16338,7 +16331,7 @@
                     },
                     {
                         "children": [],
-                        "depends_on": "MBEDTLS_HARDWARE_AES && MBEDTLS_GCM_C",
+                        "depends_on": "MBEDTLS_HARDWARE_AES",
                         "help": "Enable this config to support fallback to software definitions for a non-AES\ncipher GCM operation as we support hardware acceleration only for AES cipher.\nSome of the non-AES ciphers used in a GCM operation are DES, ARIA, CAMELLIA,\nCHACHA20, BLOWFISH.\n\nIf this config is disabled, performing a non-AES cipher GCM operation with\nthe config MBEDTLS_HARDWARE_AES enabled will result in calculation of an\nAES-GCM operation instead for the given input values and thus could lead\nto failure in certificate validation which would ultimately lead to a SSL\nhandshake failure.\n\nThis config being by-default enabled leads to an increase in binary size\nfootprint of ~2.5KB.\nIn case you are sure that your use case (for example, client and server\nconfigurations in case of a TLS handshake) would not involve any GCM\noperations using a non-AES cipher, you can safely disable this config,\nleading to reduction in binary size footprint.",
                         "id": "MBEDTLS_GCM_SUPPORT_NON_AES_CIPHER",
                         "name": "MBEDTLS_GCM_SUPPORT_NON_AES_CIPHER",
@@ -17965,16 +17958,6 @@
                             },
                             {
                                 "children": [],
-                                "depends_on": "SOC_SPI_MEM_SUPPORT_TSUS_TRES_SEPERATE_CTR && !APP_BUILD_TYPE_PURE_RAM_APP",
-                                "help": "This config is used for setting Trs parameter. Trs means CS Latency Between Resume And Next Suspend.\nYou can refer to the chapter of AC CHARACTERISTICS of flash datasheet.\nFor high-performance scenarios, some flash chips allow this set value to be smaller than the\ngiven value in the datasheet without causing errors in the flash state machine.\nWhen you have any related needs, please contact espressif business team.",
-                                "id": "SPI_FLASH_SUSPEND_TRS_VAL_US",
-                                "name": "SPI_FLASH_SUSPEND_TRS_VAL_US",
-                                "range": null,
-                                "title": "SPI flash tRS value (refer to chapter AC CHARACTERISTICS)",
-                                "type": "int"
-                            },
-                            {
-                                "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": "XMC-C series is regarded as not qualified for the Suspend feature, since its specification\nhas a tRS >= 1ms restriction. We strongly do not suggest using it for the Suspend feature.\nHowever, if your product in field has enabled this feature, you may still enable this\nconfig option to keep the legacy behavior.\n\nFor new users, DO NOT enable this config.",
                                 "id": "SPI_FLASH_FORCE_ENABLE_XMC_C_SUSPEND",
@@ -18248,8 +18231,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_XMC_SUPPORT_ENABLED",
-                                "name": "SPI_FLASH_VENDOR_XMC_SUPPORT_ENABLED",
+                                "id": "SPI_FLASH_VENDOR_XMC_SUPPORTED",
+                                "name": "SPI_FLASH_VENDOR_XMC_SUPPORTED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18258,8 +18241,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_GD_SUPPORT_ENABLED",
-                                "name": "SPI_FLASH_VENDOR_GD_SUPPORT_ENABLED",
+                                "id": "SPI_FLASH_VENDOR_GD_SUPPORTED",
+                                "name": "SPI_FLASH_VENDOR_GD_SUPPORTED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18268,8 +18251,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_ISSI_SUPPORT_ENABLED",
-                                "name": "SPI_FLASH_VENDOR_ISSI_SUPPORT_ENABLED",
+                                "id": "SPI_FLASH_VENDOR_ISSI_SUPPORTED",
+                                "name": "SPI_FLASH_VENDOR_ISSI_SUPPORTED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18278,8 +18261,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_MXIC_SUPPORT_ENABLED",
-                                "name": "SPI_FLASH_VENDOR_MXIC_SUPPORT_ENABLED",
+                                "id": "SPI_FLASH_VENDOR_MXIC_SUPPORTED",
+                                "name": "SPI_FLASH_VENDOR_MXIC_SUPPORTED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18288,8 +18271,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_WINBOND_SUPPORT_ENABLED",
-                                "name": "SPI_FLASH_VENDOR_WINBOND_SUPPORT_ENABLED",
+                                "id": "SPI_FLASH_VENDOR_WINBOND_SUPPORTED",
+                                "name": "SPI_FLASH_VENDOR_WINBOND_SUPPORTED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"

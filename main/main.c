@@ -4,6 +4,8 @@
 
  #include "nvs_flash.h"
  #include "wifi_app.h"
+ #include "DHT11.h"
+ #include "MQ135.h"
 
 void app_main(void)
 {
@@ -21,4 +23,9 @@ void app_main(void)
     //Start the WiFi application
     wifi_app_task_start();
 
+    //Start the DHT11 sensor task
+    DHT11_task_start();
+
+    //Start the MQ135 sensor task
+    MQ135_task_start();
 }
