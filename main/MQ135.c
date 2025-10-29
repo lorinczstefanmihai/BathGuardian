@@ -18,6 +18,13 @@ static const char *TAG = "MQ135";
 
 static adc1_channel_t mq135_channel = MQ135_DEFAULT_ADC_CHANNEL;
 static esp_adc_cal_characteristics_t adc_chars;
+static float raw = 0;
+static float volt = 0;
+
+// == Getter functions =======================================================
+
+float getMQ135raw(void)     { return raw; }
+float getMQ135volt(void)    { return volt; }
 
 // ---------------- Configure ADC channel ----------------
 void setMQ135Channel(adc1_channel_t channel)
@@ -51,8 +58,8 @@ static void MQ135_task(void *pvParameter)
 
     for (;;)
     {
-        float raw = readMQ135Raw();
-        float volt = readMQ135Voltage();
+        raw = readMQ135Raw();
+        volt = readMQ135Voltage();
         ESP_LOGI(TAG, "Raw: %.0f | Voltage: %.2f V", raw, volt);
         vTaskDelay(pdMS_TO_TICKS(MQ135_READ_INTERVAL_MS));
     }
