@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <esp_netif.h>
 #include "freertos/FreeRTOS.h"
+#include "esp_wifi.h"
 
 // Function prototypes
 static void wifi_app_init(void);
@@ -49,6 +50,8 @@ extern esp_netif_t *wifi_ap_netif;
     WIFI_APP_MSG_START_HTTP_SERVER = 0,
     WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER,
     WIFI_APP_MSG_STA_CONNECTED_GOT_IP,
+    WIFI_APP_MSG_USER_REQUESTED_STA_DISCONNECT,
+    WIFI_APP_MSG_STA_DISCONNECTED
  }wifi_app_message_e;
 
  /**
@@ -72,5 +75,11 @@ BaseType_t wifi_app_send_message(wifi_app_message_e msgID);
  * Start the WiFi RTOS task
  */
 void wifi_app_task_start(void);
+
+/**
+ * Gets the wifi configuration
+ */
+wifi_config_t* wifi_app_get_wifi_config(void);
+
 
 #endif // WIFI_APP_H_
