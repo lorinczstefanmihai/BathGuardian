@@ -1,0 +1,30 @@
+                ┌────────────────────────────┐
+                │        Cloud (MQTT)        │
+                │  • Stores sensor data      │
+                │  • Remote monitoring       │
+                └────────────┬───────────────┘
+                             │
+                      Wi-Fi (STA mode)
+                             │
+        ┌────────────────────┴────────────────────┐
+        │                 ESP32                   │
+        │  • Reads sensors                        │
+        │  • Controls relays                      │
+        │  • RGB LED for status                   │
+        │  • MQTT + HTTP server                   │
+        └─────────────┬─────┬────────┬────────────┘
+                      │     │        │
+             ┌────────┘     │        └──────────┐
+     ┌─────────────┐        │           ┌─────────────┐
+     │   Sensors   │        │           │   Relays    │
+     │ DHT11 (T/H) │        │	        │ Fan + Light │
+     │ MQ (Gas)    │        │           └─────────────┘
+     └─────────────┘        │
+                            │
+                   ┌────────┴────────┐
+                   │   RGB LED       │
+                   │ Status feedback │
+                   └─────────────────┘
+                
+
+   HTTP Server (AP mode) → Local web UI for configuration
