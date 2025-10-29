@@ -30,12 +30,77 @@ h4 {
     color: #1d3557;
 }
 
+.gr {
+    color: green;
+}
+
+.rd {
+    color: red;
+}
+
 #latest_firmware, #latest_firmware_label {
 	display:inline;
 }
 #latest_firmware {
 	color: #1d3557;
 }	
+
+#temperature_reading {
+    display: inline;
+    color: #1d3557;
+}
+
+#humidity_reading {
+    display:inline;
+    color: #1d3557;
+}
+
+
+#raw_reading {
+    display: inline;
+    color: #1d3557;
+}
+
+#volt_reading {
+    display:inline;
+    color: #1d3557;
+}
+
+#connected_ap_label, #connected_ap {
+	display:inline;
+}
+
+#ip_address_label, #netmask_label, #gateway_label {
+	display:inline;
+}
+
+#wifi_connect_ip, #wifi_connect_netmask, #wifi_connect_gw {
+	display:inline;
+}
+
+#connected_ap {
+	color: #1d3557;
+}
+
+#wifi_connect_ip {
+	color: #1d3557;
+}
+
+#wifi_connect_netmask {
+	color: #1d3557;
+}
+
+#wifi_connect_gw {
+	color: #1d3557;
+}
+
+#disconnect_wifi {
+	display: none;
+}
+
+#connected_ap {
+    color:#1d3557;
+}
 
 .buttons {
     padding: 5px;
