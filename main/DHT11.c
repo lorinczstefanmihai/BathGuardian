@@ -112,7 +112,7 @@ int readDHT11(void)
     // == Start signal =======================================================
     gpio_set_direction(DHTgpio, GPIO_MODE_OUTPUT);
     gpio_set_level(DHTgpio, 0);
-    vTaskDelay(pdMS_TO_TICKS(20));  // >18 ms
+    vTaskDelay(pdMS_TO_TICKS(20));  // >18 ms -> start pulse
     gpio_set_level(DHTgpio, 1);
     esp_rom_delay_us(30);
     gpio_set_direction(DHTgpio, GPIO_MODE_INPUT);
@@ -145,7 +145,7 @@ int readDHT11(void)
 
     // == Verify checksum ===================================================
     uint8_t sum = dhtData[0] + dhtData[1] + dhtData[2] + dhtData[3];
-    if (dhtData[4] != (sum & 0xFF))
+    if (dhtData[4] != (sum & 0xFF)) // overflow protection, only stores the lowest 8 bits
         return DHT_CHECKSUM_ERROR;
 
     return DHT_OK;
