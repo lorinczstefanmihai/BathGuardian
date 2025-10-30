@@ -1,16 +1,11 @@
-/*------------------------------------------------------------------------------
-    DHT11 temperature & humidity sensor driver for ESP32
-
-    Based on DHT22 (AM2302) driver structure by Ricardo Timmermann, 2017
-    Adapted for DHT11 sensor by ChatGPT, 2025
-
-    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-    Unless required by applicable law or agreed to in writing, this
-    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-    CONDITIONS OF ANY KIND, either express or implied.
-------------------------------------------------------------------------------*/
-
+/**
+ * DHT11.h
+ *
+ * @brief Header file for  DHT11 sensor.
+ * @details Provides analog read, voltage conversion, and periodic logging
+ * @created on: 2025-10-13
+ * @author Lorincz Stefan
+ */
 #ifndef __DHT11_H__
 #define __DHT11_H__
 

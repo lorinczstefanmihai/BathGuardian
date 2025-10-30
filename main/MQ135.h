@@ -1,11 +1,11 @@
-/*------------------------------------------------------------------------------
-    MQ-135 air quality sensor driver for ESP32
-
-    Provides analog read via ADC and simple ppm estimation.
-    FreeRTOS task included for periodic readings with logging.
-
-    Public Domain (CC0)
-------------------------------------------------------------------------------*/
+/**
+ * MQ135.h
+ *
+ * @brief Header file for MQ-135 sensor.
+ * @details Provides analog read, voltage conversion, and periodic logging
+ * @created on: 2025-10-13
+ * @author Lorincz Stefan
+ */
 
 #ifndef __MQ135_H__
 #define __MQ135_H__

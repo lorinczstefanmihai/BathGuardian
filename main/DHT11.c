@@ -1,13 +1,11 @@
-/*------------------------------------------------------------------------------
-    DHT11 temperature & humidity sensor driver for ESP32
-
-    Style and documentation adapted from Ricardo Timmermann’s DHT22 driver.
-    Implements timing-based bit reading for DHT11 sensor.
-
-    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-    PLEASE KEEP THIS CODE IN LESS THAN 0xFF LINES. EACH LINE MAY CONTAIN ONE BUG!
-------------------------------------------------------------------------------*/
+/**
+ * DHT11.c
+ *
+ * @brief Source file for  DHT11 sensor.
+ * @details Provides analog read, voltage conversion, and periodic logging
+ * @created on: 2025-10-13
+ * @author Lorincz Stefan
+ */
 
 #define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 

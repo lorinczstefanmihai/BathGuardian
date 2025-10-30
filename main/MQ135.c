@@ -1,7 +1,12 @@
-/*------------------------------------------------------------------------------
-    MQ-135 sensor driver for ESP32
-    Provides analog read, voltage conversion, and periodic logging
-------------------------------------------------------------------------------*/
+/**
+ * MQ135.c
+ *
+ * @brief Source file for MQ-135 sensor.
+ * @details Provides analog read, voltage conversion, and periodic logging
+ * @created on: 2025-10-13
+ * @author Lorincz Stefan
+ */
+
 
 #define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 
