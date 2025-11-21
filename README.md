@@ -1,69 +1,37 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-H21 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | --------- | -------- | -------- | -------- |
+| Supported Targets | ESP32 |
+| ----------------- | ----- |
 
-# Blink Example
+# 🛁 Bath Guardian – System Overview - IOT system to monitor the humidity, temperature and bad odour from bathroom.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+<img width="735" height="487" alt="Image" src="https://github.com/user-attachments/assets/df97590a-e61e-4400-b2d7-9c8b7a48dbc0" />
 
-This example demonstrates how to blink a LED by using the GPIO driver or using the [led_strip](https://components.espressif.com/component/espressif/led_strip) library if the LED is addressable e.g. [WS2812](https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf). The `led_strip` library is installed via [component manager](main/idf_component.yml).
+The diagram illustrates the architecture of the Bath Guardian, an IoT-based monitoring and automation system built around an ESP32 microcontroller. The ESP32 operates in AP/STA mode, allowing it to connect to Wi-Fi networks while also hosting its own access point if needed.
 
-## How to Use Example
+##🔧 Key Components & Functionality
+🌡️ Sensors (DHT11, MQ)
 
-Before project configuration and build, be sure to set the correct chip target using `idf.py set-target <chip_name>`.
+• DHT11: Measures temperature and humidity.
+• MQ sensor: Detects gas levels (e.g., steam, VOCs), enhancing safety and environmental monitoring.
+The ESP32 collects continuous sensor data for local processing and cloud reporting.
 
-### Hardware Required
+##🌈 RGB LED
 
-* A development board with normal LED or addressable LED on-board (e.g., ESP32-S3-DevKitC, ESP32-C6-DevKitC etc.)
-* A USB cable for Power supply and programming
+• Provides real-time visual feedback (e.g., warnings, status indicators, or mode selections).
 
-See [Development Boards](https://www.espressif.com/en/products/devkits) for more information about it.
+##🌐 MQTT Cloud Integration (HiveMQ)
 
-### Configure the Project
+• Sensor data and event updates are sent via Wi-Fi to an MQTT broker (HiveMQ).
 
-Open the project configuration menu (`idf.py menuconfig`).
+• Enables remote monitoring, automation rules, dashboards, or mobile app integration.
 
-In the `Example Configuration` menu:
+##🔌 Relay Outputs (Fan & Light)
 
-* Select the LED type in the `Blink LED type` option.
-  * Use `GPIO` for regular LED
-  * Use `LED strip` for addressable LED
-* If the LED type is `LED strip`, select the backend peripheral
-  * `RMT` is only available for ESP targets with RMT peripheral supported
-  * `SPI` is available for all ESP targets
-* Set the GPIO number used for the signal in the `Blink GPIO number` option.
-* Set the blinking period in the `Blink period in ms` option.
+• The ESP32 controls fan and light relays to automate ventilation or illumination based on sensor readings or remote commands.
 
-### Build and Flash
+• Useful for humidity control, air quality, or safety response.
 
-Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
+##🖥️ Local HTTP Server
 
-(To exit the serial monitor, type ``Ctrl-]``.)
+• The ESP32 hosts an HTTP web interface accessible over Wi-Fi.
 
-See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
-
-## Example Output
-
-As you run the example, you will see the LED blinking, according to the previously defined period. For the addressable LED, you can also change the LED color by setting the `led_strip_set_pixel(led_strip, 0, 16, 16, 16);` (LED Strip, Pixel Number, Red, Green, Blue) with values from 0 to 255 in the [source file](main/blink_example_main.c).
-
-```text
-I (315) example: Example configured to blink addressable LED!
-I (325) example: Turning the LED OFF!
-I (1325) example: Turning the LED ON!
-I (2325) example: Turning the LED OFF!
-I (3325) example: Turning the LED ON!
-I (4325) example: Turning the LED OFF!
-I (5325) example: Turning the LED ON!
-I (6325) example: Turning the LED OFF!
-I (7325) example: Turning the LED ON!
-I (8325) example: Turning the LED OFF!
-```
-
-Note: The color order could be different according to the LED model.
-
-The pixel number indicates the pixel position in the LED strip. For a single LED, use 0.
-
-## Troubleshooting
-
-* If the LED isn't blinking, check the GPIO or the LED type selection in the `Example Configuration` menu.
-
-For any technical queries, please open an [issue](https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
+• Allows manual control of relays, real-time sensor monitoring, and system configuration directly from a browser.
