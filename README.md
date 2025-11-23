@@ -124,4 +124,4 @@ Local configuration
 
 This allows full control even without internet.
 
-<img width="925" height="1861" alt="Image" src="https://github.com/user-attachments/assets/3ac3893e-1f8f-48cd-a653-edd1d62e1cc4" />
+<img width="470" height="900" alt="Image" src="https://github.com/user-attachments/assets/3ac3893e-1f8f-48cd-a653-edd1d62e1cc4" />
