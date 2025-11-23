@@ -1,69 +1,127 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-H21 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | --------- | -------- | -------- | -------- |
+# 🛁 Bath Guardian – AWS IoT Edition ( THIS IS THE PROTOTYPE)
 
-# Blink Example
+An ESP32-powered monitoring & automation system for humidity, gas levels, temperature, and bathroom safety.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+Bath Guardian uses an ESP32 microcontroller, environmental sensors, and AWS IoT Core to provide real-time monitoring, automation, and remote control. The system can operate both locally (via its built-in web server) and through the cloud.
 
-This example demonstrates how to blink a LED by using the GPIO driver or using the [led_strip](https://components.espressif.com/component/espressif/led_strip) library if the LED is addressable e.g. [WS2812](https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf). The `led_strip` library is installed via [component manager](main/idf_component.yml).
+## 🚀 System Architecture Overview
+ESP32 (AP/STA Mode)
+The ESP32 runs in dual AP/STA mode, allowing it to connect to your Wi-Fi network while also offering an access point for local setup or fallback access.
 
-## How to Use Example
+<img width="800" height="500" alt="Image" src="https://github.com/user-attachments/assets/58ba41c1-b94e-4eff-9a1b-04f9b07a71dc" />
 
-Before project configuration and build, be sure to set the correct chip target using `idf.py set-target <chip_name>`.
 
-### Hardware Required
+## 🔧 Hardware Components
+🌡️ Sensors
 
-* A development board with normal LED or addressable LED on-board (e.g., ESP32-S3-DevKitC, ESP32-C6-DevKitC etc.)
-* A USB cable for Power supply and programming
+DHT11 – Temperature & humidity
 
-See [Development Boards](https://www.espressif.com/en/products/devkits) for more information about it.
+MQ-series gas sensor – Detects gases/VOCs (steam, odors, poor air quality)
 
-### Configure the Project
+The ESP32 collects continuous sensor data and pushes it to the cloud.
 
-Open the project configuration menu (`idf.py menuconfig`).
+## 🌈 RGB LED
 
-In the `Example Configuration` menu:
+Provides visual indicators for system status, warnings, or mode states.
 
-* Select the LED type in the `Blink LED type` option.
-  * Use `GPIO` for regular LED
-  * Use `LED strip` for addressable LED
-* If the LED type is `LED strip`, select the backend peripheral
-  * `RMT` is only available for ESP targets with RMT peripheral supported
-  * `SPI` is available for all ESP targets
-* Set the GPIO number used for the signal in the `Blink GPIO number` option.
-* Set the blinking period in the `Blink period in ms` option.
+🔌 Relay Outputs
 
-### Build and Flash
+Controls:
 
-Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
+Ventilation fan
 
-(To exit the serial monitor, type ``Ctrl-]``.)
+Lighting
 
-See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
+Relays can be triggered automatically (based on sensor thresholds) or remotely via AWS IoT commands.
 
-## Example Output
+## ☁️ AWS Cloud Integration
 
-As you run the example, you will see the LED blinking, according to the previously defined period. For the addressable LED, you can also change the LED color by setting the `led_strip_set_pixel(led_strip, 0, 16, 16, 16);` (LED Strip, Pixel Number, Red, Green, Blue) with values from 0 to 255 in the [source file](main/blink_example_main.c).
+Bath Guardian connects to the cloud using:
 
-```text
-I (315) example: Example configured to blink addressable LED!
-I (325) example: Turning the LED OFF!
-I (1325) example: Turning the LED ON!
-I (2325) example: Turning the LED OFF!
-I (3325) example: Turning the LED ON!
-I (4325) example: Turning the LED OFF!
-I (5325) example: Turning the LED ON!
-I (6325) example: Turning the LED OFF!
-I (7325) example: Turning the LED ON!
-I (8325) example: Turning the LED OFF!
-```
+AWS IoT Core (MQTT)
 
-Note: The color order could be different according to the LED model.
+The ESP32 publishes data to custom MQTT topics.
+Example topic used:
 
-The pixel number indicates the pixel position in the LED strip. For a single LED, use 0.
+test_topic/esp32
 
-## Troubleshooting
+<img width="1894" height="889" alt="Image" src="https://github.com/user-attachments/assets/79c46600-4433-4142-a1b0-28637f12f564" />
 
-* If the LED isn't blinking, check the GPIO or the LED type selection in the `Example Configuration` menu.
+AWS IoT Core receives these messages for monitoring, automation, and further processing.
 
-For any technical queries, please open an [issue](https://github.com/espressif/esp-idf/issues) on GitHub. We will get back to you soon.
+## 🖥️ Local Web Interface
+
+The ESP32 also hosts a local HTTP web server, accessible over Wi-Fi.
+
+Features:
+
+Live sensor reading display
+
+Local configuration
+
+This allows full control even without internet.
+
+<img width="925" height="1861" alt="Image" src="https://github.com/user-attachments/assets/3ac3893e-1f8f-48cd-a653-edd1d62e1cc4" /># 🛁 Bath Guardian – AWS IoT Edition ( THIS IS THE PROTOTYPE)
+
+An ESP32-powered monitoring & automation system for humidity, gas levels, temperature, and bathroom safety.
+
+Bath Guardian uses an ESP32 microcontroller, environmental sensors, and AWS IoT Core to provide real-time monitoring, automation, and remote control. The system can operate both locally (via its built-in web server) and through the cloud.
+
+## 🚀 System Architecture Overview
+ESP32 (AP/STA Mode)
+The ESP32 runs in dual AP/STA mode, allowing it to connect to your Wi-Fi network while also offering an access point for local setup or fallback access.
+
+<img width="800" height="500" alt="Image" src="https://github.com/user-attachments/assets/58ba41c1-b94e-4eff-9a1b-04f9b07a71dc" />
+
+
+## 🔧 Hardware Components
+🌡️ Sensors
+
+DHT11 – Temperature & humidity
+
+MQ-series gas sensor – Detects gases/VOCs (steam, odors, poor air quality)
+
+The ESP32 collects continuous sensor data and pushes it to the cloud.
+
+## 🌈 RGB LED
+
+Provides visual indicators for system status, warnings, or mode states.
+
+🔌 Relay Outputs
+
+Controls:
+
+Ventilation fan
+
+Lighting
+
+Relays can be triggered automatically (based on sensor thresholds) or remotely via AWS IoT commands.
+
+## ☁️ AWS Cloud Integration
+
+Bath Guardian connects to the cloud using:
+
+AWS IoT Core (MQTT)
+
+The ESP32 publishes data to custom MQTT topics.
+Example topic used:
+
+test_topic/esp32
+
+<img width="1894" height="889" alt="Image" src="https://github.com/user-attachments/assets/79c46600-4433-4142-a1b0-28637f12f564" />
+
+AWS IoT Core receives these messages for monitoring, automation, and further processing.
+
+## 🖥️ Local Web Interface
+
+The ESP32 also hosts a local HTTP web server, accessible over Wi-Fi.
+
+Features:
+
+Live sensor reading display
+
+Local configuration
+
+This allows full control even without internet.
+
+<img width="925" height="1861" alt="Image" src="https://github.com/user-attachments/assets/3ac3893e-1f8f-48cd-a653-edd1d62e1cc4" />
