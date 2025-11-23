@@ -2463,6 +2463,16 @@
         "children": [],
         "depends_on": null,
         "help": null,
+        "id": "SOC_BLE_MULTI_CONN_OPTIMIZATION",
+        "name": "SOC_BLE_MULTI_CONN_OPTIMIZATION",
+        "range": null,
+        "title": null,
+        "type": "bool"
+    },
+    {
+        "children": [],
+        "depends_on": null,
+        "help": null,
         "id": "SOC_ULP_HAS_ADC",
         "name": "SOC_ULP_HAS_ADC",
         "range": null,
@@ -2986,27 +2996,48 @@
                         "children": [
                             {
                                 "children": [],
-                                "depends_on": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
-                                "help": "The secure version is the sequence number stored in the header of each bootloader.\n\nThe ROM Bootloader which runs the 2nd stage bootloader (PRIMARY or RECOVERY) checks that\nthe security version is greater or equal that recorded in the eFuse field.\nBootloaders that have a secure version in the image < secure version in efuse will not boot.\n\nThe security version is worth increasing if in previous versions there is\na significant vulnerability and their use is not acceptable.",
-                                "id": "BOOTLOADER_SECURE_VERSION",
-                                "name": "BOOTLOADER_SECURE_VERSION",
+                                "depends_on": "BOOTLOADER_RECOVERY_ENABLE",
+                                "help": "Flash address where the recovery bootloader is stored.\nThis value must be written to the eFuse field (ESP_EFUSE_RECOVERY_BOOTLOADER_FLASH_SECTOR)\nto activate the recovery bootloader in the ROM bootloader. The eFuse can be programmed\nusing espefuse.py or in the user application with the API esp_efuse_set_recovery_bootloader_offset().\nSetting this value in the config allows parttool.py to verify that it does not overlap with existing\npartitions in the partition table.\n\nThe address must be a multiple of the flash sector size (0x1000 bytes).\nThe eFuse field stores the offset in sectors.\nIf the feature is no longer needed or unused, you can burn the 0xFFF value to disable this feature in\nthe ROM bootloader.",
+                                "id": "BOOTLOADER_RECOVERY_OFFSET",
+                                "name": "BOOTLOADER_RECOVERY_OFFSET",
                                 "range": null,
-                                "title": "Secure version of bootloader",
-                                "type": "int"
+                                "title": "Recovery Bootloader Flash Offset",
+                                "type": "hex"
+                            },
+                            {
+                                "children": [
+                                    {
+                                        "children": [],
+                                        "depends_on": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
+                                        "help": "The secure version is the sequence number stored in the header of each bootloader.\n\nThe ROM Bootloader which runs the 2nd stage bootloader (PRIMARY or RECOVERY) checks that\nthe security version is greater or equal that recorded in the eFuse field.\nBootloaders that have a secure version in the image < secure version in efuse will not boot.\n\nThe security version is worth increasing if in previous versions there is\na significant vulnerability and their use is not acceptable.",
+                                        "id": "BOOTLOADER_SECURE_VERSION",
+                                        "name": "BOOTLOADER_SECURE_VERSION",
+                                        "range": null,
+                                        "title": "Secure version of bootloader",
+                                        "type": "int"
+                                    }
+                                ],
+                                "depends_on": "BOOTLOADER_RECOVERY_ENABLE",
+                                "help": "This option prevents rollback to previous bootloader image with lower security version.",
+                                "id": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
+                                "name": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
+                                "range": null,
+                                "title": "Enable bootloader rollback support",
+                                "type": "bool"
                             }
                         ],
                         "depends_on": "SOC_RECOVERY_BOOTLOADER_SUPPORTED",
-                        "help": "This option prevents rollback to previous bootloader image with lower security version.",
-                        "id": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
-                        "name": "BOOTLOADER_ANTI_ROLLBACK_ENABLE",
+                        "help": "The recovery bootloader feature is implemented in the ROM bootloader. It is required for safe OTA\nupdates of the bootloader. The feature is activated when the eFuse field\n(ESP_EFUSE_RECOVERY_BOOTLOADER_FLASH_SECTOR) is set, which defines the flash address of the\nrecovery bootloader. If activated and the primary bootloader fails to load, the ROM bootloader\nwill attempt to load the recovery bootloader from the address specified in eFuse.",
+                        "id": "BOOTLOADER_RECOVERY_ENABLE",
+                        "name": "BOOTLOADER_RECOVERY_ENABLE",
                         "range": null,
-                        "title": "Enable bootloader rollback support",
+                        "title": "Enable Recovery Bootloader",
                         "type": "bool"
                     }
                 ],
                 "depends_on": null,
-                "id": "bootloader-config-bootloader-rollback",
-                "title": "Bootloader Rollback",
+                "id": "bootloader-config-recovery-bootloader-and-rollback",
+                "title": "Recovery Bootloader and Rollback",
                 "type": "menu"
             },
             {
@@ -3887,10 +3918,20 @@
                         "range": null,
                         "title": "Using ECC curve NISTP256 (Recommended)",
                         "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "SECURE_SIGNED_APPS_ECDSA_V2_SCHEME && SOC_ECDSA_SUPPORT_CURVE_P384 && <choice SECURE_BOOT_ECDSA_KEY_LEN_SIZE>",
+                        "help": null,
+                        "id": "SECURE_BOOT_ECDSA_KEY_LEN_384_BITS",
+                        "name": "SECURE_BOOT_ECDSA_KEY_LEN_384_BITS",
+                        "range": null,
+                        "title": "Using ECC curve NISTP384 (Recommended)",
+                        "type": "bool"
                     }
                 ],
                 "depends_on": "SECURE_SIGNED_APPS_ECDSA_V2_SCHEME",
-                "help": "Select the ECDSA key size. Two key sizes are supported\n\n- 192 bit key using NISTP192 curve\n- 256 bit key using NISTP256 curve (Recommended)\n\nThe advantage of using 256 bit key is the extra randomness which makes it difficult to be\nbruteforced compared to 192 bit key.\nAt present, both key sizes are practically implausible to bruteforce.",
+                "help": "Select the ECDSA key size. Three key sizes are supported depending upon on the target:\n\n- 192 bit key using NISTP192 curve\n- 256 bit key using NISTP256 curve (Recommended)\n- 384 bit key using NISTP384 curve (Recommended)\n\nThe advantage of using 384 and 256 bit keys is the extra randomness which makes it difficult to be\nbruteforced compared to 192 bit key.\nAt present, both key sizes are practically implausible to bruteforce.",
                 "id": "security-features-ecdsa-key-size",
                 "name": "SECURE_BOOT_ECDSA_KEY_LEN_SIZE",
                 "title": "ECDSA key size",
@@ -4383,7 +4424,7 @@
                     {
                         "children": [],
                         "depends_on": "SOC_SUPPORTS_SECURE_DL_MODE && <choice SECURE_UART_ROM_DL_MODE>",
-                        "help": "If set, during startup the app will burn an eFuse bit to permanently switch the UART ROM\nDownload Mode into a separate Secure Download mode. This option can only work if\nDownload Mode is not already disabled by eFuse.\n\nSecure Download mode limits the use of Download Mode functions to update SPI config,\nchanging baud rate, basic flash write and a command to return a summary of currently\nenabled security features (`get_security_info`).\n\nSecure Download mode is not compatible with the esptool.py flasher stub feature,\nespefuse.py, read/writing memory or registers, encrypted download, or any other\nfeatures that interact with unsupported Download Mode commands.\n\nSecure Download mode should be enabled in any application where Flash Encryption\nand/or Secure Boot is enabled. Disabling this option does not immediately cancel\nthe benefits of the security features, but it increases the potential \"attack\nsurface\" for an attacker to try and bypass them with a successful physical attack.\n\nIt is also possible to enable secure download mode at runtime by calling\nesp_efuse_enable_rom_secure_download_mode()\n\nNote: Secure Download mode is not available for ESP32 (includes revisions till ECO3).",
+                        "help": "If set, during startup the app will burn an eFuse bit to permanently switch the UART ROM\nDownload Mode into a separate Secure Download mode. This option can only work if\nDownload Mode is not already disabled by eFuse.\n\nSecure Download mode limits the use of Download Mode functions to update SPI config,\nchanging baud rate, basic flash write and a command to return a summary of currently\nenabled security features (`get_security_info`).\n\nSecure Download mode is not compatible with the esptool.py flasher stub feature,\nespefuse.py, read/writing memory or registers, encrypted download, or any other\nfeatures that interact with unsupported Download Mode commands.\n\nSecure Download mode should be enabled in any application where Flash Encryption\nand/or Secure Boot is enabled. Disabling this option does not immediately cancel\nthe benefits of the security features, but it increases the potential \"attack\nsurface\" for an attacker to try and bypass them with a successful physical attack.\n\nIt is also possible to enable secure download mode at runtime by calling\nesp_efuse_enable_rom_secure_download_mode()\n\nNote: Secure Download mode is not available for ESP32.",
                         "id": "SECURE_ENABLE_SECURE_ROM_DL_MODE",
                         "name": "SECURE_ENABLE_SECURE_ROM_DL_MODE",
                         "range": null,
@@ -6347,6 +6388,226 @@
                 "depends_on": null,
                 "id": "component-config-efuse-bit-manager",
                 "title": "eFuse Bit Manager",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Default endpoint host name to connect to AWS IoT MQTT/S gateway\n\nThis is the custom endpoint hostname and is specific to an AWS\nIoT account. You can find it by logging into your AWS IoT\nConsole and clicking the Settings button. The endpoint hostname\nis shown under the \"Custom Endpoint\" heading on this page.\n\nIf you need per-device hostnames for different regions or\naccounts, you can override the default hostname in your app.",
+                        "id": "AWS_IOT_MQTT_HOST",
+                        "name": "AWS_IOT_MQTT_HOST",
+                        "range": null,
+                        "title": "AWS IoT Endpoint Hostname",
+                        "type": "string"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Default port number to connect to AWS IoT MQTT/S gateway\n\nIf you need per-device port numbers for different regions, you can\noverride the default port number in your app.",
+                        "id": "AWS_IOT_MQTT_PORT",
+                        "name": "AWS_IOT_MQTT_PORT",
+                        "range": [
+                            0,
+                            65535
+                        ],
+                        "title": "AWS IoT MQTT Port",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Maximum MQTT transmit buffer size. This is the maximum MQTT\nmessage length (including protocol overhead) which can be sent.\n\nSending longer messages will fail.",
+                        "id": "AWS_IOT_MQTT_TX_BUF_LEN",
+                        "name": "AWS_IOT_MQTT_TX_BUF_LEN",
+                        "range": [
+                            32,
+                            131072
+                        ],
+                        "title": "MQTT TX Buffer Length",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Maximum MQTT receive buffer size. This is the maximum MQTT\nmessage length (including protocol overhead) which can be\nreceived.\n\nLonger messages are dropped.",
+                        "id": "AWS_IOT_MQTT_RX_BUF_LEN",
+                        "name": "AWS_IOT_MQTT_RX_BUF_LEN",
+                        "range": [
+                            32,
+                            131072
+                        ],
+                        "title": "MQTT RX Buffer Length",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Maximum number of concurrent MQTT topic filters.",
+                        "id": "AWS_IOT_MQTT_NUM_SUBSCRIBE_HANDLERS",
+                        "name": "AWS_IOT_MQTT_NUM_SUBSCRIBE_HANDLERS",
+                        "range": [
+                            1,
+                            100
+                        ],
+                        "title": "Maximum MQTT Topic Filters",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Initial delay before making first reconnect attempt, if the AWS IoT connection fails.\nClient will perform exponential backoff, starting from this value.",
+                        "id": "AWS_IOT_MQTT_MIN_RECONNECT_WAIT_INTERVAL",
+                        "name": "AWS_IOT_MQTT_MIN_RECONNECT_WAIT_INTERVAL",
+                        "range": [
+                            10,
+                            3600000
+                        ],
+                        "title": "Auto reconnect initial interval (ms)",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Maximum delay between reconnection attempts. If the exponentially increased delay\ninterval reaches this value, the client will stop automatically attempting to reconnect.",
+                        "id": "AWS_IOT_MQTT_MAX_RECONNECT_WAIT_INTERVAL",
+                        "name": "AWS_IOT_MQTT_MAX_RECONNECT_WAIT_INTERVAL",
+                        "range": [
+                            10,
+                            3600000
+                        ],
+                        "title": "Auto reconnect maximum interval (ms)",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "ATCA_MBEDTLS_ECDSA",
+                        "help": "Enable this option to use the hardware secure element for the TLS. If you have added the\nesp-cryptoauthlib (https://github.com/espressif/esp-cryptoauthlib) as a component in your project.\nThis will let the user to specify a slot number from the chip (in the format \"#0\"\nwhere the digit is the slot number to use) which contains the stored private key.\nPlease refer to the component README for more details.",
+                        "id": "AWS_IOT_USE_HARDWARE_SECURE_ELEMENT",
+                        "name": "AWS_IOT_USE_HARDWARE_SECURE_ELEMENT",
+                        "range": null,
+                        "title": "Use the hardware secure element for authenticating TLS connections",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [
+                                    {
+                                        "children": [],
+                                        "depends_on": "AWS_IOT_OVERRIDE_THING_SHADOW_RX_BUFFER",
+                                        "help": "Allows setting a different Thing Shadow RX buffer size.\nThis is the maximum size of a Thing Shadow message in bytes,\nplus one.",
+                                        "id": "AWS_IOT_SHADOW_MAX_SIZE_OF_RX_BUFFER",
+                                        "name": "AWS_IOT_SHADOW_MAX_SIZE_OF_RX_BUFFER",
+                                        "range": null,
+                                        "title": "Maximum RX Buffer (bytes)",
+                                        "type": "int"
+                                    }
+                                ],
+                                "depends_on": null,
+                                "help": "Allows setting a different Thing Shadow RX buffer\nsize. This is the maximum size of a Thing Shadow\nmessage in bytes, plus one.\n\nIf not overridden, the default value is the MQTT RX Buffer length plus one. If overriden, do not set\nhigher than the default value.",
+                                "id": "AWS_IOT_OVERRIDE_THING_SHADOW_RX_BUFFER",
+                                "name": "AWS_IOT_OVERRIDE_THING_SHADOW_RX_BUFFER",
+                                "range": null,
+                                "title": "Override Shadow RX buffer size",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "Maximum size of the Unique Client Id.",
+                                "id": "AWS_IOT_SHADOW_MAX_SIZE_OF_UNIQUE_CLIENT_ID_BYTES",
+                                "name": "AWS_IOT_SHADOW_MAX_SIZE_OF_UNIQUE_CLIENT_ID_BYTES",
+                                "range": [
+                                    4,
+                                    1000
+                                ],
+                                "title": "Maximum unique client ID size (bytes)",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "At any given time we will wait for this many responses. This will correlate to the rate at which the\nshadow actions are requested",
+                                "id": "AWS_IOT_SHADOW_MAX_SIMULTANEOUS_ACKS",
+                                "name": "AWS_IOT_SHADOW_MAX_SIMULTANEOUS_ACKS",
+                                "range": [
+                                    1,
+                                    100
+                                ],
+                                "title": "Maximum simultaneous responses",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "We could perform shadow action on any thing Name and this is maximum Thing Names we can act on at any\ngiven time",
+                                "id": "AWS_IOT_SHADOW_MAX_SIMULTANEOUS_THINGNAMES",
+                                "name": "AWS_IOT_SHADOW_MAX_SIMULTANEOUS_THINGNAMES",
+                                "range": [
+                                    1,
+                                    100
+                                ],
+                                "title": "Maximum simultaneous Thing Name operations",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "These are the max tokens that is expected to be in the Shadow JSON document. Includes the metadata which\nis published",
+                                "id": "AWS_IOT_SHADOW_MAX_JSON_TOKEN_EXPECTED",
+                                "name": "AWS_IOT_SHADOW_MAX_JSON_TOKEN_EXPECTED",
+                                "range": null,
+                                "title": "Maximum expected JSON tokens",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "All shadow actions have to be published or subscribed to a topic which is of the format\n$aws/things/{thingName}/shadow/update/accepted. This refers to the size of the topic without the Thing\nName",
+                                "id": "AWS_IOT_SHADOW_MAX_SHADOW_TOPIC_LENGTH_WITHOUT_THINGNAME",
+                                "name": "AWS_IOT_SHADOW_MAX_SHADOW_TOPIC_LENGTH_WITHOUT_THINGNAME",
+                                "range": [
+                                    10,
+                                    1000
+                                ],
+                                "title": "Maximum topic length (not including Thing Name)",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "Maximum length of a Thing Name.",
+                                "id": "AWS_IOT_SHADOW_MAX_SIZE_OF_THING_NAME",
+                                "name": "AWS_IOT_SHADOW_MAX_SIZE_OF_THING_NAME",
+                                "range": [
+                                    4,
+                                    1000
+                                ],
+                                "title": "Maximum Thing Name length",
+                                "type": "int"
+                            }
+                        ],
+                        "depends_on": null,
+                        "id": "component-config-amazon-web-services-iot-platform-thing-shadow",
+                        "title": "Thing Shadow",
+                        "type": "menu"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Allow setting the ssl socket to non blocking mode",
+                        "id": "AWS_IOT_SSL_SOCKET_NON_BLOCKING",
+                        "name": "AWS_IOT_SSL_SOCKET_NON_BLOCKING",
+                        "range": null,
+                        "title": "Set socket as non blocking",
+                        "type": "bool"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-amazon-web-services-iot-platform",
+                "title": "Amazon Web Services IoT Platform",
                 "type": "menu"
             },
             {
@@ -8672,6 +8933,16 @@
                     },
                     {
                         "children": [],
+                        "depends_on": "SOC_PMU_PVT_SUPPORTED",
+                        "help": "If enabled, hp & lp voltage can be auto adjust by PVT characteristic.\nOtherwise, internal voltage will be set to fix dbias.\nThis is a must for stable mass production. Disable for debugging only.",
+                        "id": "ESP_ENABLE_PVT",
+                        "name": "ESP_ENABLE_PVT",
+                        "range": null,
+                        "title": "Auto adjust hp & lp voltage using pvt function (MUST ENABLE FOR MP)",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
                         "depends_on": null,
                         "help": null,
                         "id": "ESP_INTR_IN_IRAM",
@@ -9086,6 +9357,16 @@
                     {
                         "children": [],
                         "depends_on": "ESP_PHY_ENABLED",
+                        "help": "Set the period of the pll track.",
+                        "id": "ESP_PHY_PLL_TRACK_PERIOD_MS",
+                        "name": "ESP_PHY_PLL_TRACK_PERIOD_MS",
+                        "range": null,
+                        "title": "Set the period of the pll track",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "ESP_PHY_ENABLED",
                         "help": "If enabled, there will be some logs while pll tracking",
                         "id": "ESP_PHY_PLL_TRACK_DEBUG",
                         "name": "ESP_PHY_PLL_TRACK_DEBUG",
@@ -9112,6 +9393,28 @@
                         "range": null,
                         "title": "PHY IRAM speed optimization",
                         "type": "bool"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "ESP_PHY_DEBUG && ESP_PHY_ENABLED",
+                                "help": "Disable pll track. This configuration option is used for experimental.\nPLL track helps the PHY module adapt to temperature changes, ensuring stable performance.\nWhen pll enabled, the ESP PHY module will periodically track and adjust PLL parameters.",
+                                "id": "ESP_PHY_DISABLE_PLL_TRACK",
+                                "name": "ESP_PHY_DISABLE_PLL_TRACK",
+                                "range": null,
+                                "title": "Disable phy pll track(only for experimental)",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": "ESP_PHY_ENABLED",
+                        "help": "Enabling this option allows different kinds of phy debugging features.",
+                        "id": "ESP_PHY_DEBUG",
+                        "is_menuconfig": true,
+                        "name": "ESP_PHY_DEBUG",
+                        "range": null,
+                        "title": "Enable PHY Debug",
+                        "type": "menu"
                     }
                 ],
                 "depends_on": null,
@@ -9620,6 +9923,16 @@
                         "id": "component-config-esp-system-settings-trace-memory",
                         "title": "Trace memory",
                         "type": "menu"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "The following system functions will be placed in IRAM if this option is enabled:\n- system startup\n- system time\n- system error\n- system restart\n- system crosscore\n- system debug\n- system APB backup DMA lock\n- system application tick hook\n- Unified Behavior Sanitizer (UBSAN) hook\n- Interrupt watchdog handler\n- XTAL32K watchdog timer\n- USB CDC functions for the esp_rom_printf (if ESP_CONSOLE_USB_CDC_SUPPORT_ETS_PRINTF=y)\n- IPC and IPC ISR",
+                        "id": "ESP_SYSTEM_IN_IRAM",
+                        "name": "ESP_SYSTEM_IN_IRAM",
+                        "range": null,
+                        "title": "Place system functions in IRAM",
+                        "type": "bool"
                     },
                     {
                         "children": [
@@ -10417,6 +10730,16 @@
                 "children": [
                     {
                         "children": [],
+                        "depends_on": "!ESP_SYSTEM_SINGLE_CORE_MODE || APPTRACE_GCOV_ENABLE",
+                        "help": null,
+                        "id": "ESP_IPC_ENABLE",
+                        "name": "ESP_IPC_ENABLE",
+                        "range": null,
+                        "title": null,
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
                         "depends_on": null,
                         "help": "Configure the IPC tasks stack size. An IPC task runs on each core (in dual core mode), and allows for\ncross-core function calls. See IPC documentation for more details. The default IPC stack size should be\nenough for most common simple use cases. However, users can increase/decrease the stack size to their\nneeds.",
                         "id": "ESP_IPC_TASK_STACK_SIZE",
@@ -10430,7 +10753,7 @@
                     },
                     {
                         "children": [],
-                        "depends_on": "!FREERTOS_UNICORE",
+                        "depends_on": "ESP_IPC_ENABLE",
                         "help": "If this option is not enabled then the IPC task will keep behavior same as prior to that of ESP-IDF v4.0,\nhence IPC task will run at (configMAX_PRIORITIES - 1) priority.",
                         "id": "ESP_IPC_USES_CALLERS_PRIORITY",
                         "name": "ESP_IPC_USES_CALLERS_PRIORITY",
@@ -11934,6 +12257,634 @@
                 "depends_on": null,
                 "id": "component-config-wi-fi",
                 "title": "Wi-Fi",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Number of volumes (logical drives) to use.",
+                        "id": "FATFS_VOLUME_COUNT",
+                        "name": "FATFS_VOLUME_COUNT",
+                        "range": [
+                            1,
+                            10
+                        ],
+                        "title": "Number of volumes",
+                        "type": "int"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_LONG_FILENAMES>",
+                                "help": null,
+                                "id": "FATFS_LFN_NONE",
+                                "name": "FATFS_LFN_NONE",
+                                "range": null,
+                                "title": "No long filenames",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_LONG_FILENAMES>",
+                                "help": null,
+                                "id": "FATFS_LFN_HEAP",
+                                "name": "FATFS_LFN_HEAP",
+                                "range": null,
+                                "title": "Long filename buffer in heap",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_LONG_FILENAMES>",
+                                "help": null,
+                                "id": "FATFS_LFN_STACK",
+                                "name": "FATFS_LFN_STACK",
+                                "range": null,
+                                "title": "Long filename buffer on stack",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "Support long filenames in FAT. Long filename data increases\nmemory usage. FATFS can be configured to store the buffer for\nlong filename data in stack or heap.",
+                        "id": "component-config-fat-filesystem-support-long-filename-support",
+                        "name": "FATFS_LONG_FILENAMES",
+                        "title": "Long filename support",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_SECTOR_SIZE>",
+                                "help": null,
+                                "id": "FATFS_SECTOR_512",
+                                "name": "FATFS_SECTOR_512",
+                                "range": null,
+                                "title": "512",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_SECTOR_SIZE>",
+                                "help": null,
+                                "id": "FATFS_SECTOR_4096",
+                                "name": "FATFS_SECTOR_4096",
+                                "range": null,
+                                "title": "4096",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "Specify the size of the sector in bytes for FATFS partition generator.",
+                        "id": "component-config-fat-filesystem-support-sector-size",
+                        "name": "FATFS_SECTOR_SIZE",
+                        "title": "Sector size",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_DYNAMIC",
+                                "name": "FATFS_CODEPAGE_DYNAMIC",
+                                "range": null,
+                                "title": "Dynamic (all code pages supported)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_437",
+                                "name": "FATFS_CODEPAGE_437",
+                                "range": null,
+                                "title": "US (CP437)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_720",
+                                "name": "FATFS_CODEPAGE_720",
+                                "range": null,
+                                "title": "Arabic (CP720)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_737",
+                                "name": "FATFS_CODEPAGE_737",
+                                "range": null,
+                                "title": "Greek (CP737)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_771",
+                                "name": "FATFS_CODEPAGE_771",
+                                "range": null,
+                                "title": "KBL (CP771)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_775",
+                                "name": "FATFS_CODEPAGE_775",
+                                "range": null,
+                                "title": "Baltic (CP775)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_850",
+                                "name": "FATFS_CODEPAGE_850",
+                                "range": null,
+                                "title": "Latin 1 (CP850)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_852",
+                                "name": "FATFS_CODEPAGE_852",
+                                "range": null,
+                                "title": "Latin 2 (CP852)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_855",
+                                "name": "FATFS_CODEPAGE_855",
+                                "range": null,
+                                "title": "Cyrillic (CP855)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_857",
+                                "name": "FATFS_CODEPAGE_857",
+                                "range": null,
+                                "title": "Turkish (CP857)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_860",
+                                "name": "FATFS_CODEPAGE_860",
+                                "range": null,
+                                "title": "Portuguese (CP860)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_861",
+                                "name": "FATFS_CODEPAGE_861",
+                                "range": null,
+                                "title": "Icelandic (CP861)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_862",
+                                "name": "FATFS_CODEPAGE_862",
+                                "range": null,
+                                "title": "Hebrew (CP862)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_863",
+                                "name": "FATFS_CODEPAGE_863",
+                                "range": null,
+                                "title": "Canadian French (CP863)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_864",
+                                "name": "FATFS_CODEPAGE_864",
+                                "range": null,
+                                "title": "Arabic (CP864)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_865",
+                                "name": "FATFS_CODEPAGE_865",
+                                "range": null,
+                                "title": "Nordic (CP865)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_866",
+                                "name": "FATFS_CODEPAGE_866",
+                                "range": null,
+                                "title": "Russian (CP866)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_869",
+                                "name": "FATFS_CODEPAGE_869",
+                                "range": null,
+                                "title": "Greek 2 (CP869)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_932",
+                                "name": "FATFS_CODEPAGE_932",
+                                "range": null,
+                                "title": "Japanese (DBCS) (CP932)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_936",
+                                "name": "FATFS_CODEPAGE_936",
+                                "range": null,
+                                "title": "Simplified Chinese (DBCS) (CP936)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_949",
+                                "name": "FATFS_CODEPAGE_949",
+                                "range": null,
+                                "title": "Korean (DBCS) (CP949)",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_CHOOSE_CODEPAGE>",
+                                "help": null,
+                                "id": "FATFS_CODEPAGE_950",
+                                "name": "FATFS_CODEPAGE_950",
+                                "range": null,
+                                "title": "Traditional Chinese (DBCS) (CP950)",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "OEM code page used for file name encodings.\n\nIf \"Dynamic\" is selected, code page can be chosen at runtime using\nf_setcp function. Note that choosing this option will increase\napplication size by ~480kB.",
+                        "id": "component-config-fat-filesystem-support-oem-code-page",
+                        "name": "FATFS_CHOOSE_CODEPAGE",
+                        "title": "OEM Code Page",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": null,
+                        "id": "FATFS_CODEPAGE",
+                        "name": "FATFS_CODEPAGE",
+                        "range": null,
+                        "title": null,
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "!FATFS_LFN_NONE",
+                        "help": "Maximum long filename length. Can be reduced to save RAM.",
+                        "id": "FATFS_MAX_LFN",
+                        "name": "FATFS_MAX_LFN",
+                        "range": null,
+                        "title": "Max long filename length",
+                        "type": "int"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_API_ENCODING>",
+                                "help": null,
+                                "id": "FATFS_API_ENCODING_ANSI_OEM",
+                                "name": "FATFS_API_ENCODING_ANSI_OEM",
+                                "range": null,
+                                "title": "API uses ANSI/OEM encoding",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_API_ENCODING>",
+                                "help": null,
+                                "id": "FATFS_API_ENCODING_UTF_8",
+                                "name": "FATFS_API_ENCODING_UTF_8",
+                                "range": null,
+                                "title": "API uses UTF-8 encoding",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": "!FATFS_LFN_NONE",
+                        "help": "Choose encoding for character and string arguments/returns when using\nFATFS APIs. The encoding of arguments will usually depend on text\neditor settings.",
+                        "id": "component-config-fat-filesystem-support-api-character-encoding",
+                        "name": "FATFS_API_ENCODING",
+                        "title": "API character encoding",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This option sets the FATFS configuration value _FS_LOCK.\nThe option _FS_LOCK switches file lock function to control duplicated file open\nand illegal operation to open objects.\n\n* 0: Disable file lock function. To avoid volume corruption, application\nshould avoid illegal open, remove and rename to the open objects.\n\n* >0: Enable file lock function. The value defines how many files/sub-directories\ncan be opened simultaneously under file lock control.\n\nNote that the file lock control is independent of re-entrancy.",
+                        "id": "FATFS_FS_LOCK",
+                        "name": "FATFS_FS_LOCK",
+                        "range": [
+                            0,
+                            65535
+                        ],
+                        "title": "Number of simultaneously open files protected by lock function",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This option sets FATFS configuration value _FS_TIMEOUT, scaled to milliseconds.\nSets the number of milliseconds FATFS will wait to acquire a mutex when\noperating on an open file. For example, if one task is performing a lengthy\noperation, another task will wait for the first task to release the lock,\nand time out after amount of time set by this option.",
+                        "id": "FATFS_TIMEOUT_MS",
+                        "name": "FATFS_TIMEOUT_MS",
+                        "range": null,
+                        "title": "Timeout for acquiring a file lock, ms",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "This option affects FATFS configuration value _FS_TINY.\n\nIf this option is set, _FS_TINY is 0, and each open file has its own cache,\nsize of the cache is equal to the _MAX_SS variable (512 or 4096 bytes).\nThis option uses more RAM if more than 1 file is open, but needs less reads\nand writes to the storage for some operations.\n\nIf this option is not set, _FS_TINY is 1, and single cache is used for\nall open files, size is also equal to _MAX_SS variable. This reduces the\namount of heap used when multiple files are open, but increases the number\nof read and write operations which FATFS needs to make.",
+                        "id": "FATFS_PER_FILE_CACHE",
+                        "name": "FATFS_PER_FILE_CACHE",
+                        "range": null,
+                        "title": "Use separate cache for each file",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "SPIRAM_USE_CAPS_ALLOC || SPIRAM_USE_MALLOC",
+                        "help": "When the option is enabled, internal buffers used by FATFS will be allocated\nfrom external RAM. If the allocation from external RAM fails, the buffer will\nbe allocated from the internal RAM.\nDisable this option if optimizing for performance. Enable this option if\noptimizing for internal memory size.",
+                        "id": "FATFS_ALLOC_PREFER_EXTRAM",
+                        "name": "FATFS_ALLOC_PREFER_EXTRAM",
+                        "range": null,
+                        "title": "Prefer external RAM when allocating FATFS buffers",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "The fast seek feature enables fast backward/long seek operations without\nFAT access by using an in-memory CLMT (cluster link map table).\nPlease note, fast-seek is only allowed for read-mode files, if a\nfile is opened in write-mode, the seek mechanism will automatically fallback\nto the default implementation.",
+                        "id": "FATFS_USE_FASTSEEK",
+                        "name": "FATFS_USE_FASTSEEK",
+                        "range": null,
+                        "title": "Enable fast seek algorithm when using lseek function through VFS FAT",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_USE_STRFUNC_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_USE_STRFUNC_NONE",
+                                "name": "FATFS_USE_STRFUNC_NONE",
+                                "range": null,
+                                "title": "0:Disable",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_USE_STRFUNC_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_USE_STRFUNC_WITHOUT_CRLF_CONV",
+                                "name": "FATFS_USE_STRFUNC_WITHOUT_CRLF_CONV",
+                                "range": null,
+                                "title": "1:Enable without LF-CRLF conversion",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_USE_STRFUNC_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_USE_STRFUNC_WITH_CRLF_CONV",
+                                "name": "FATFS_USE_STRFUNC_WITH_CRLF_CONV",
+                                "range": null,
+                                "title": "2:Enable with LF-CRLF conversion",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "These are specialized alternatives to stdio functions for working\ndirectly with FATFS without VFS.  Legacy code may need functions,\nbut for new development, it is advised to use stdio under VFS.\n\n0: Disable. FF_PRINT_LLI, FF_PRINT_FLOAT and FF_STRF_ENCODE have no effect.\n1: Enable without LF-CRLF conversion.\n2: Enable with LF-CRLF conversion.",
+                        "id": "component-config-fat-filesystem-support-enable-string-functions-f_gets-f_putc-f_puts-and-f_printf-",
+                        "name": "FATFS_USE_STRFUNC_CHOICE",
+                        "title": "Enable string functions, f_gets(), f_putc(), f_puts() and f_printf()",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "!FATFS_USE_STRFUNC_NONE",
+                        "help": null,
+                        "id": "FATFS_PRINT_LLI",
+                        "name": "FATFS_PRINT_LLI",
+                        "range": null,
+                        "title": "Make fatfs f_printf() support long long argument",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "!FATFS_USE_STRFUNC_NONE",
+                        "help": null,
+                        "id": "FATFS_PRINT_FLOAT",
+                        "name": "FATFS_PRINT_FLOAT",
+                        "range": null,
+                        "title": "Make fatfs f_printf() support floating point argument",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_STRF_ENCODE_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_STRF_ENCODE_ANSI",
+                                "name": "FATFS_STRF_ENCODE_ANSI",
+                                "range": null,
+                                "title": "0:ANSI/OEM in current CP",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_STRF_ENCODE_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_STRF_ENCODE_UTF16LE",
+                                "name": "FATFS_STRF_ENCODE_UTF16LE",
+                                "range": null,
+                                "title": "1:Unicode in UTF-16LE",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_STRF_ENCODE_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_STRF_ENCODE_UTF16BE",
+                                "name": "FATFS_STRF_ENCODE_UTF16BE",
+                                "range": null,
+                                "title": "2:Unicode in UTF-16BE",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice FATFS_STRF_ENCODE_CHOICE>",
+                                "help": null,
+                                "id": "FATFS_STRF_ENCODE_UTF8",
+                                "name": "FATFS_STRF_ENCODE_UTF8",
+                                "range": null,
+                                "title": "3:Unicode in UTF-8",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": "!FATFS_LFN_NONE && !FATFS_USE_STRFUNC_NONE",
+                        "help": "When FF_LFN_UNICODE >= 1 with LFN enabled, string functions convert the character\nencoding in it. FF_STRF_ENCODE selects assumption of character encoding ON THE FILE\nto be read/written via those functions.\n0: ANSI/OEM in current CP\n1: Unicode in UTF-16LE\n2: Unicode in UTF-16BE\n3: Unicode in UTF-8",
+                        "id": "component-config-fat-filesystem-support-fatfs-string-functions-convert-character-encoding",
+                        "name": "FATFS_STRF_ENCODE_CHOICE",
+                        "title": "FatFS string functions: convert character encoding",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": "FATFS_USE_FASTSEEK",
+                        "help": "If fast seek algorithm is enabled, this defines the size of\nCLMT buffer used by this algorithm in 32-bit word units.\nThis value should be chosen based on prior knowledge of\nmaximum elements of each file entry would store.",
+                        "id": "FATFS_FAST_SEEK_BUFFER_SIZE",
+                        "name": "FATFS_FAST_SEEK_BUFFER_SIZE",
+                        "range": null,
+                        "title": "Fast seek CLMT buffer size",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "If set to 0, the 'newlib' library's default size (BLKSIZ) is used (128 B).\nIf set to a non-zero value, the value is used as the block size.\nDefault file buffer size is set to this value\nand the buffer is allocated when first attempt of reading/writing to a file is made.\nIncreasing this value improves fread() speed, however the heap usage is increased as well.\n\nNOTE: The block size value is shared by all the filesystem functions\naccessing target media for given file descriptor!\nSee 'Improving I/O performance' section of 'Maximizing Execution Speed' documentation page\nfor more details.",
+                        "id": "FATFS_VFS_FSTAT_BLKSIZE",
+                        "name": "FATFS_VFS_FSTAT_BLKSIZE",
+                        "range": null,
+                        "title": "Default block size",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Enables automatic calling of f_sync() to flush recent file changes after each call of vfs_fat_write(),\nvfs_fat_pwrite(), vfs_fat_link(), vfs_fat_truncate() and vfs_fat_ftruncate() functions.\nThis feature improves file-consistency and size reporting accuracy for the FatFS,\nat a price on decreased performance due to frequent disk operations",
+                        "id": "FATFS_IMMEDIATE_FSYNC",
+                        "name": "FATFS_IMMEDIATE_FSYNC",
+                        "range": null,
+                        "title": "Enable automatic f_sync",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Allows FATFS volume label to be specified using f_setlabel",
+                        "id": "FATFS_USE_LABEL",
+                        "name": "FATFS_USE_LABEL",
+                        "range": null,
+                        "title": "Use FATFS volume label",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "If enabled, the whole link operation (including file copying) is performed under lock.\nThis ensures that the link operation is atomic, but may cause performance for large files.\nIt may create less fragmented file copy.",
+                        "id": "FATFS_LINK_LOCK",
+                        "name": "FATFS_LINK_LOCK",
+                        "range": null,
+                        "title": "Perform the whole link operation under lock",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "If enabled, the buffers used by FATFS will be allocated separately from the rest of the structure.\nThis option is useful when using multiple FATFS instances with different\nsector sizes, as the buffers will be allocated according to the sector size.\nIf disabled, the greatest sector size will be used for all FATFS instances.\n(In most cases, this would be the sector size of Wear Levelling library)\nThis might cause more memory to be used than necessary.",
+                        "id": "FATFS_USE_DYN_BUFFERS",
+                        "name": "FATFS_USE_DYN_BUFFERS",
+                        "range": null,
+                        "title": "Use dynamic buffers",
+                        "type": "bool"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "If 1, the file system will not trust the free cluster count in the FSINFO (in FATFS struct).\nThis may result in more accurate output from `f_getfree()` function but increased overhead.",
+                                "id": "FATFS_DONT_TRUST_FREE_CLUSTER_CNT",
+                                "name": "FATFS_DONT_TRUST_FREE_CLUSTER_CNT",
+                                "range": [
+                                    0,
+                                    1
+                                ],
+                                "title": "Don't trust free cluster count",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": null,
+                                "help": "If 1, the file system will not trust the last allocated cluster number in the FSINFO (in FATFS struct).\nThis may result in more accurate output from `f_getfree()` function but increased overhead.",
+                                "id": "FATFS_DONT_TRUST_LAST_ALLOC",
+                                "name": "FATFS_DONT_TRUST_LAST_ALLOC",
+                                "range": [
+                                    0,
+                                    1
+                                ],
+                                "title": "Don't trust allocated cluster number",
+                                "type": "int"
+                            }
+                        ],
+                        "depends_on": null,
+                        "id": "component-config-fat-filesystem-support-file-system-free-space-calculation-behavior",
+                        "title": "File system free space calculation behavior",
+                        "type": "menu"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-fat-filesystem-support",
+                "title": "FAT Filesystem support",
                 "type": "menu"
             },
             {
@@ -14035,7 +14986,7 @@
                         "id": "LWIP_DHCP_OPTIONS_LEN",
                         "name": "LWIP_DHCP_OPTIONS_LEN",
                         "range": [
-                            68,
+                            69,
                             255
                         ],
                         "title": "DHCP total option length",
@@ -16033,6 +16984,16 @@
                             },
                             {
                                 "children": [],
+                                "depends_on": "MBEDTLS_TLS_ENABLED",
+                                "help": "Enable shared symmetric keys export for TLS sessions using mbedtls_ssl_export_keying_material()\nafter SSL handshake. The process for deriving the keys is specified in RFC 5705 for TLS 1.2\nand in RFC 8446, Section 7.5, for TLS 1.3.",
+                                "id": "MBEDTLS_SSL_KEYING_MATERIAL_EXPORT",
+                                "name": "MBEDTLS_SSL_KEYING_MATERIAL_EXPORT",
+                                "range": null,
+                                "title": "Enable keying material export",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
                                 "depends_on": "MBEDTLS_X509_CRL_PARSE_C",
                                 "help": "Enable PKCS number 7 core for using PKCS number 7-formatted signatures.",
                                 "id": "MBEDTLS_PKCS7_C",
@@ -16331,7 +17292,7 @@
                     },
                     {
                         "children": [],
-                        "depends_on": "MBEDTLS_HARDWARE_AES",
+                        "depends_on": "MBEDTLS_HARDWARE_AES && MBEDTLS_GCM_C",
                         "help": "Enable this config to support fallback to software definitions for a non-AES\ncipher GCM operation as we support hardware acceleration only for AES cipher.\nSome of the non-AES ciphers used in a GCM operation are DES, ARIA, CAMELLIA,\nCHACHA20, BLOWFISH.\n\nIf this config is disabled, performing a non-AES cipher GCM operation with\nthe config MBEDTLS_HARDWARE_AES enabled will result in calculation of an\nAES-GCM operation instead for the given input values and thus could lead\nto failure in certificate validation which would ultimately lead to a SSL\nhandshake failure.\n\nThis config being by-default enabled leads to an increase in binary size\nfootprint of ~2.5KB.\nIn case you are sure that your use case (for example, client and server\nconfigurations in case of a TLS handshake) would not involve any GCM\noperations using a non-AES cipher, you can safely disable this config,\nleading to reduction in binary size footprint.",
                         "id": "MBEDTLS_GCM_SUPPORT_NON_AES_CIPHER",
                         "name": "MBEDTLS_GCM_SUPPORT_NON_AES_CIPHER",
@@ -17958,6 +18919,16 @@
                             },
                             {
                                 "children": [],
+                                "depends_on": "SOC_SPI_MEM_SUPPORT_TSUS_TRES_SEPERATE_CTR && !APP_BUILD_TYPE_PURE_RAM_APP",
+                                "help": "This config is used for setting Trs parameter. Trs means CS Latency Between Resume And Next Suspend.\nYou can refer to the chapter of AC CHARACTERISTICS of flash datasheet.\nFor high-performance scenarios, some flash chips allow this set value to be smaller than the\ngiven value in the datasheet without causing errors in the flash state machine.\nWhen you have any related needs, please contact espressif business team.",
+                                "id": "SPI_FLASH_SUSPEND_TRS_VAL_US",
+                                "name": "SPI_FLASH_SUSPEND_TRS_VAL_US",
+                                "range": null,
+                                "title": "SPI flash tRS value (refer to chapter AC CHARACTERISTICS)",
+                                "type": "int"
+                            },
+                            {
+                                "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": "XMC-C series is regarded as not qualified for the Suspend feature, since its specification\nhas a tRS >= 1ms restriction. We strongly do not suggest using it for the Suspend feature.\nHowever, if your product in field has enabled this feature, you may still enable this\nconfig option to keep the legacy behavior.\n\nFor new users, DO NOT enable this config.",
                                 "id": "SPI_FLASH_FORCE_ENABLE_XMC_C_SUSPEND",
@@ -18231,8 +19202,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_XMC_SUPPORTED",
-                                "name": "SPI_FLASH_VENDOR_XMC_SUPPORTED",
+                                "id": "SPI_FLASH_VENDOR_XMC_SUPPORT_ENABLED",
+                                "name": "SPI_FLASH_VENDOR_XMC_SUPPORT_ENABLED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18241,8 +19212,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_GD_SUPPORTED",
-                                "name": "SPI_FLASH_VENDOR_GD_SUPPORTED",
+                                "id": "SPI_FLASH_VENDOR_GD_SUPPORT_ENABLED",
+                                "name": "SPI_FLASH_VENDOR_GD_SUPPORT_ENABLED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18251,8 +19222,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_ISSI_SUPPORTED",
-                                "name": "SPI_FLASH_VENDOR_ISSI_SUPPORTED",
+                                "id": "SPI_FLASH_VENDOR_ISSI_SUPPORT_ENABLED",
+                                "name": "SPI_FLASH_VENDOR_ISSI_SUPPORT_ENABLED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18261,8 +19232,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_MXIC_SUPPORTED",
-                                "name": "SPI_FLASH_VENDOR_MXIC_SUPPORTED",
+                                "id": "SPI_FLASH_VENDOR_MXIC_SUPPORT_ENABLED",
+                                "name": "SPI_FLASH_VENDOR_MXIC_SUPPORT_ENABLED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18271,8 +19242,8 @@
                                 "children": [],
                                 "depends_on": "!APP_BUILD_TYPE_PURE_RAM_APP",
                                 "help": null,
-                                "id": "SPI_FLASH_VENDOR_WINBOND_SUPPORTED",
-                                "name": "SPI_FLASH_VENDOR_WINBOND_SUPPORTED",
+                                "id": "SPI_FLASH_VENDOR_WINBOND_SUPPORT_ENABLED",
+                                "name": "SPI_FLASH_VENDOR_WINBOND_SUPPORT_ENABLED",
                                 "range": null,
                                 "title": null,
                                 "type": "bool"
@@ -18478,6 +19449,94 @@
                 "depends_on": null,
                 "id": "component-config-virtual-file-system",
                 "title": "Virtual file system",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice WL_SECTOR_SIZE>",
+                                "help": null,
+                                "id": "WL_SECTOR_SIZE_512",
+                                "name": "WL_SECTOR_SIZE_512",
+                                "range": null,
+                                "title": "512",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice WL_SECTOR_SIZE>",
+                                "help": null,
+                                "id": "WL_SECTOR_SIZE_4096",
+                                "name": "WL_SECTOR_SIZE_4096",
+                                "range": null,
+                                "title": "4096",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "Sector size used by wear levelling library.\nYou can set default sector size or size that will\nfit to the flash device sector size.\n\nWith sector size set to 4096 bytes, wear levelling library is more\nefficient. However if FAT filesystem is used on top of wear levelling\nlibrary, it will need more temporary storage: 4096 bytes for each\nmounted filesystem and 4096 bytes for each opened file.\n\nWith sector size set to 512 bytes, wear levelling library will perform\nmore operations with flash memory, but less RAM will be used by FAT\nfilesystem library (512 bytes for the filesystem and 512 bytes for each\nfile opened).",
+                        "id": "component-config-wear-levelling-wear-levelling-library-sector-size",
+                        "name": "WL_SECTOR_SIZE",
+                        "title": "Wear Levelling library sector size",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": null,
+                        "id": "WL_SECTOR_SIZE",
+                        "name": "WL_SECTOR_SIZE",
+                        "range": null,
+                        "title": null,
+                        "type": "int"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice WL_SECTOR_MODE>",
+                                "help": null,
+                                "id": "WL_SECTOR_MODE_PERF",
+                                "name": "WL_SECTOR_MODE_PERF",
+                                "range": null,
+                                "title": "Performance",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice WL_SECTOR_MODE>",
+                                "help": null,
+                                "id": "WL_SECTOR_MODE_SAFE",
+                                "name": "WL_SECTOR_MODE_SAFE",
+                                "range": null,
+                                "title": "Safety",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": "WL_SECTOR_SIZE_512",
+                        "help": "Specify the mode to store data into flash:\n\n- In Performance mode a data will be stored to the RAM and then\n  stored back to the flash. Compared to the Safety mode, this operation is\n  faster, but if power will be lost when erase sector operation is in\n  progress, then the data from complete flash device sector will be lost.\n\n- In Safety mode data from complete flash device sector will be read from\n  flash, modified, and then stored back to flash.\n  Compared to the Performance mode, this operation is slower, but if\n  power is lost during erase sector operation, then the data from full\n  flash device sector will not be lost.",
+                        "id": "component-config-wear-levelling-sector-store-mode",
+                        "name": "WL_SECTOR_MODE",
+                        "title": "Sector store mode",
+                        "type": "choice"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": null,
+                        "id": "WL_SECTOR_MODE",
+                        "name": "WL_SECTOR_MODE",
+                        "range": null,
+                        "title": null,
+                        "type": "int"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-wear-levelling",
+                "title": "Wear Levelling",
                 "type": "menu"
             }
         ],

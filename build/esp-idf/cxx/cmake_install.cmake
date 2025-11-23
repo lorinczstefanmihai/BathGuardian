@@ -1,4 +1,4 @@
-# Install script for directory: D:/KNOWLEDGE/CURSURI/ESP-IDF/v5.5/esp-idf/components/cxx
+# Install script for directory: C:/Users/lorin/esp/v5.5.1/esp-idf/components/cxx
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

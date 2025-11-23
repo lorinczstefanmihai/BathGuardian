@@ -16,6 +16,7 @@
 #include "esp_adc_cal.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "tasks_common.h"
 
 #include "MQ135.h"
 

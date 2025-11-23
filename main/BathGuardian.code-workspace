@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"terminal.integrated.shell.windows" : "cmd.exe",
+		"terminal.intefrated.shellArgs.windows" : [
+			"/k",
+			"C:/Users/lorin/esp/v5.5.1/esp-idf/export.bat"
+		],
+		"files.associations": {
+			"cstdint": "c",
+			"rgb_led.h": "c",
+			"ledc.h": "c",
+			"ledc_types.h": "c",
+			"freertos.h": "c",
+			"tasks_common.h": "c",
+			"esp_netif.h": "c",
+			"http_server.h": "c",
+			"MQ135.C": "cpp",
+			"adc.h": "c",
+			"task.h": "c",
+			"netbuf.h": "c",
+			"string.h": "c",
+			"aws_iot_config.h": "c",
+			"wifi_app.h": "c"
+		}
+	}
+}

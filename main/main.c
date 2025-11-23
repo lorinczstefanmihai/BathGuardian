@@ -2,10 +2,21 @@
  * Application main entry point.
  */
 
+ #include "esp_log.h"
  #include "nvs_flash.h"
+
  #include "wifi_app.h"
  #include "DHT11.h"
  #include "MQ135.h"
+ #include "aws_iot.h"
+
+static const char TAG[] = "main";
+
+void wifi_application_connected_events(void)
+{
+    ESP_LOGI(TAG, "WIFI Application Connected!");
+    aws_iot_start();
+}
 
 void app_main(void)
 {
@@ -28,4 +39,7 @@ void app_main(void)
 
     //Start the MQ135 sensor task
     MQ135_task_start();
+
+    // Set connected event callback
+	wifi_app_set_callback(&wifi_application_connected_events);
 }

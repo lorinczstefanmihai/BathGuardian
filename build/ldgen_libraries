@@ -116,7 +116,13 @@ D:/PROJECTS/BathGuardian/build/esp-idf/esp_driver_ledc/libesp_driver_ledc.a
 D:/PROJECTS/BathGuardian/build/esp-idf/esp_driver_twai/libesp_driver_twai.a
 D:/PROJECTS/BathGuardian/build/esp-idf/esp_adc/libesp_adc.a
 D:/PROJECTS/BathGuardian/build/esp-idf/driver/libdriver.a
+D:/PROJECTS/BathGuardian/build/esp-idf/wear_levelling/libwear_levelling.a
+D:/PROJECTS/BathGuardian/build/esp-idf/fatfs/libfatfs.a
+D:/PROJECTS/BathGuardian/build/esp-idf/wear_levelling/libwear_levelling.a
+D:/PROJECTS/BathGuardian/build/esp-idf/esp-aws-iot/libesp-aws-iot.a
 D:/PROJECTS/BathGuardian/build/esp-idf/espressif__led_strip/libespressif__led_strip.a
 D:/PROJECTS/BathGuardian/build/esp-idf/main/libmain.a
 D:/PROJECTS/BathGuardian/build/esp-idf/esp_adc/libesp_adc.a
+D:/PROJECTS/BathGuardian/build/esp-idf/fatfs/libfatfs.a
+D:/PROJECTS/BathGuardian/build/esp-idf/esp-aws-iot/libesp-aws-iot.a
 D:/PROJECTS/BathGuardian/build/esp-idf/espressif__led_strip/libespressif__led_strip.a

@@ -25,8 +25,18 @@
     "tasks_common.h": "c",
     "esp_netif.h": "c",
     "http_server.h": "c",
-    "MQ135.C": "cpp"
+    "MQ135.C": "cpp",
+    "adc.h": "c",
+    "task.h": "c",
+    "netbuf.h": "c",
+    "string.h": "c",
+    "aws_iot_config.h": "c",
+    "mq135.h": "c",
+    "nvs.h": "c"
   },
   "idf.flashType": "UART",
-  "idf.portWin": "COM18"
+  "idf.portWin": "COM6",
+  "C_Cpp.errorSquiggles": "disabled",
+  "idf.espIdfPathWin": "C:\\Users\\lorin\\esp\\v5.5.1\\esp-idf",
+  "idf.toolsPathWin": "C:\\Users\\lorin\\.espressif"
 }

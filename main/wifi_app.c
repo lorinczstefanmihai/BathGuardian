@@ -15,8 +15,10 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "lwip/netbuf.h"
+#include "lwip/apps/sntp.h"
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <time.h>
 
 
 #include "rgb_led.h"
@@ -30,6 +32,9 @@
 static QueueHandle_t wifi_app_queue_handle;
 
 static const char *TAG = "wifi_app";
+
+//WiFi application callback
+static wifi_connected_event_callback_t wifi_connected_event_cb;
 
 // Used for returning the WiFi configuration
 wifi_config_t *wifi_config = NULL;
@@ -259,7 +264,7 @@ static void wifi_app_task(void *pvParameters)
 
 					// Next, start the web server
 					wifi_app_send_message(WIFI_APP_MSG_START_HTTP_SERVER);
-
+                
 					break; 
 
 
@@ -268,6 +273,7 @@ static void wifi_app_task(void *pvParameters)
                     ESP_LOGI(TAG, "Starting HTTP server...");
                     http_server_start();
                     rgb_led_http_server_started();
+                    
                     break;
 
                 case WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER:
@@ -289,6 +295,18 @@ static void wifi_app_task(void *pvParameters)
                 case WIFI_APP_MSG_STA_CONNECTED_GOT_IP:
                     ESP_LOGI(TAG, "Station connected and got IP address.");
 
+                    // Synchronize time via SNTP (required for AWS IoT certificate validation)
+                    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+                    sntp_setservername(0, "pool.ntp.org");
+                    sntp_init();
+                    ESP_LOGI(TAG, "Waiting for NTP time synchronization...");
+                    time_t now = time(NULL);
+                    while (now < 24 * 3600) {
+                        vTaskDelay(100 / portTICK_PERIOD_MS);
+                        now = time(NULL);
+                    }
+                    ESP_LOGI(TAG, "System time synchronized: %ld", now);
+
                     // Handle post-connection tasks here
                     rgb_led_wifi_connected();                    
                     http_server_monitor_send_message(HTTP_MSG_WIFI_CONNNECT_SUCCESS);
@@ -307,6 +325,12 @@ static void wifi_app_task(void *pvParameters)
 					{
 						xEventGroupClearBits(wifi_app_event_group, WIFI_APP_CONNECTING_FROM_HTTP_SERVER_BIT);
 					}
+
+                    //Check for connection callback
+                    if(wifi_connected_event_cb)
+                    {
+                        wifi_app_call_callback();
+                    }
 
                     break;
 
@@ -371,6 +395,22 @@ wifi_config_t* wifi_app_get_wifi_config(void)
 {
 	return wifi_config;
 }
+
+/**
+*  Sets the callback function
+*/
+void wifi_app_set_callback(wifi_connected_event_callback_t cb)
+{
+    wifi_connected_event_cb = cb;
+}
+/**
+*  Calls the callback function
+*/
+void wifi_app_call_callback(void)
+{
+    wifi_connected_event_cb();
+}
+
 
 // Add your WiFi application code below
 void wifi_app_task_start(void)

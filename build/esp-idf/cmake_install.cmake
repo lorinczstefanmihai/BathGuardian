@@ -1,4 +1,4 @@
-# Install script for directory: D:/KNOWLEDGE/CURSURI/ESP-IDF/v5.5/esp-idf
+# Install script for directory: C:/Users/lorin/esp/v5.5.1/esp-idf
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -365,6 +365,21 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("D:/PROJECTS/BathGuardian/build/esp-idf/esp_adc/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("D:/PROJECTS/BathGuardian/build/esp-idf/wear_levelling/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("D:/PROJECTS/BathGuardian/build/esp-idf/fatfs/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("D:/PROJECTS/BathGuardian/build/esp-idf/esp-aws-iot/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

@@ -18,8 +18,10 @@
 #include "freertos/FreeRTOS.h"
 #include "esp_wifi.h"
 
+//Callback typedef
+typedef void (*wifi_connected_event_callback_t)(void);
+
 // Function prototypes
-static void wifi_app_init(void);
 void wifi_app_task_start(void);
 
 #define WIFI_AP_SSID               "BathGuardian-AP"  //AP name
@@ -82,5 +84,14 @@ void wifi_app_task_start(void);
  */
 wifi_config_t* wifi_app_get_wifi_config(void);
 
+/**
+*  Sets the callback function
+*/
+void wifi_app_set_callback(wifi_connected_event_callback_t cb);
+
+/**
+*  Calls the callback function
+*/
+void wifi_app_call_callback(void);
 
 #endif // WIFI_APP_H_

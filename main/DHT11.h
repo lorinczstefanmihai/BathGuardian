@@ -23,7 +23,6 @@
 // ---- Configuration --------------------------------------------------------
 
 #define DHT11_GPIO            4   // Default GPIO pin (can be changed)
-#define DHT11_TASK_STACK_SIZE 2048
 #define DHT11_TASK_PRIORITY   5
 #define DHT11_TASK_CORE_ID    1
 
